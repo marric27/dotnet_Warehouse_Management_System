@@ -10,7 +10,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         public int ReceivedQty { get; set; }
         public int CompliantQty { get; set; }
         public int NotCompliantQty { get; set; }
-        public State state { get; set; }
+        public State State { get; set; }
         public string Notes { get; set; }
     }
 }

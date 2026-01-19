@@ -14,7 +14,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 ReceivedQty = item.ReceivedQty,
                 CompliantQty = item.CompliantQty,
                 NotCompliantQty = item.NotCompliantQty,
-                state = item.State
+                State = item.State,
+                Notes = item.Notes
             };
         }
 
@@ -26,7 +27,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 ExpectedQty = dto.ExpectedQty,
                 ReceivedQty = dto.ReceivedQty,
                 CompliantQty = dto.CompliantQty,
-                NotCompliantQty = dto.NotCompliantQty
+                NotCompliantQty = dto.NotCompliantQty,
+                Notes = dto.Notes,
+                GrnId = dto.GrnId,
             };
         }
     }

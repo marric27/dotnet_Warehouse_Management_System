@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
 {
@@ -12,7 +13,10 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
         public int CompliantQty { get; set; }
         public int NotCompliantQty { get; set; }
         public State State { get; set; }
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
+        public long GrnId { get; set; }
+        public Grn Grn { get; set; }
+
 
         //public List<CheckingInfo> checkingInfoList;
 

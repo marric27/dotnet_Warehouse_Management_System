@@ -15,5 +15,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         [Required]
         public int NotCompliantQty { get; set; }
         public string? Notes { get; set; }
+        [Required]
+        public long GrnId { get; set; }
     }
 }

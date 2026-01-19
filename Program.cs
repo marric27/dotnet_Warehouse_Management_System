@@ -1,9 +1,10 @@
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
+using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
+using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Products.Entities;
 using dotnet_Warehouse_Management_System.Warehouses.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,9 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IGrnRepository, GrnRepository>();
 builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
+builder.Services.AddScoped<IGrnService, GrnService>();
+builder.Services.AddScoped<IGrnItemService, GrnItemService>();
+builder.Services.AddScoped<ReceivingService, ReceivingService>();
 
 var app = builder.Build();
 

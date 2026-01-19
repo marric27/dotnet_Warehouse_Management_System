@@ -10,7 +10,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         Task<List<GrnItem>> GetAllAsync(QueryObject query);
         Task<GrnItem?> GetByCodeAsync(string code);
         Task<GrnItem> CreateAsync(GrnItem item);
-        Task<GrnItem> UpdateAsync(string code, GrnItemRequestDto itemDto);
-        Task<GrnItem?> DeleteAsync(string code);
+        Task<GrnItem> UpdateAsync(string code, GrnItem item);
+        Task<bool> DeleteAsync(string code);
     }
 }

@@ -8,11 +8,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
         {
             return new GrnResponseDto
             {
+                Id = grn.Id,
                 Code = grn.Code,
                 Supplier = grn.Supplier,
                 State = grn.State,
                 ReceivingDate = grn.ReceivingDate,
-                Items = grn.Items
+                Items = grn.Items.Select(i => i.ToResponseDto()).ToList(),
             };
         }
 

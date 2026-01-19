@@ -5,10 +5,10 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 {
     public interface IGrnRepository
     {
-        Task<List<Grn>> GetAllAsync(QueryObject query);
+        Task<List<Grn>> GetAllAsync();
         Task<Grn?> GetByCodeAsync(string code);
         Task<Grn> CreateAsync(Grn grn);
-        Task<Grn> UpdateAsync(string code, GrnRequestDto grnDto);
-        Task<Grn?> DeleteAsync(string code);
+        Task<Grn> UpdateAsync(string code, Grn grn);
+        Task<bool> DeleteAsync(string code);
     }
 }
