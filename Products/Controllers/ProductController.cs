@@ -1,9 +1,9 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.Products.Entities;
 using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Products.Entities.Mappers;
-using dotnet_Warehouse_Management_System.Products.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_Warehouse_Management_System.Products.Controller
@@ -38,18 +38,6 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
             return Ok(pageResult);
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById([FromRoute] long id)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _context.Products.FindAsync(id);
-            if (prod == null)
-            {
-                return NotFound();
-            }
-            return Ok(prod.ToResponseDto());
-        }
-
         [HttpGet("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
@@ -68,7 +56,7 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var prod = product.ToProduct();
             await _productRepository.CreateAsync(prod);
-            return CreatedAtAction(nameof(GetById), new { id = prod.Id }, prod.ToResponseDto());
+            return CreatedAtAction(nameof(GetByCode), new { id = prod.Id }, prod.ToResponseDto());
         }
 
         [HttpPut("bycode/{code}")]

@@ -1,4 +1,5 @@
 using dotnet_Warehouse_Management_System.Data;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.Products.Entities;
 using dotnet_Warehouse_Management_System.Warehouses.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,8 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IGrnRepository, GrnRepository>();
+builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
 
 var app = builder.Build();
 

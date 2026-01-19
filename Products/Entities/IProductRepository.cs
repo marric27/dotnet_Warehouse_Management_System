@@ -1,5 +1,5 @@
-﻿using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
-using dotnet_Warehouse_Management_System.Products.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common.Helpers;
+using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 
 namespace dotnet_Warehouse_Management_System.Products.Entities
 {

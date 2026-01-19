@@ -1,4 +1,4 @@
-﻿using dotnet_Warehouse_Management_System.Slots.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities

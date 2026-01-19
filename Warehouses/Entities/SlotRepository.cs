@@ -1,5 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Slots.Helpers;
+using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,12 +41,6 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities
             {
                 slots = slots.Where(s => s.Code.Contains(query.Code));
             }
-
-            if (query.Category.HasValue)
-            {
-                slots = slots.Where(s => s.Category == query.Category);
-            }
-
             if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
                 if (query.SortBy.Equals("Code", StringComparison.OrdinalIgnoreCase))

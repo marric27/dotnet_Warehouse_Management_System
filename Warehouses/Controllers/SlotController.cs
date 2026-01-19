@@ -1,7 +1,6 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
-using dotnet_Warehouse_Management_System.Slots.Helpers;
 using dotnet_Warehouse_Management_System.Warehouses.Entities;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers;

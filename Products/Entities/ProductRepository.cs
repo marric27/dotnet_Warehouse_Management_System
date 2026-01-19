@@ -1,6 +1,6 @@
-﻿using dotnet_Warehouse_Management_System.Data;
+﻿using dotnet_Warehouse_Management_System.Common.Helpers;
+using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
-using dotnet_Warehouse_Management_System.Products.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -17,19 +17,15 @@ namespace dotnet_Warehouse_Management_System.Products.Entities
         public async Task<List<Product>> GetAllAsync(QueryObject query)
         {
             var prods = _context.Products.AsNoTracking().AsQueryable();
-            if (!string.IsNullOrWhiteSpace(query.Name))
+            if (!string.IsNullOrWhiteSpace(query.Code))
             {
-                prods = prods.Where(p => p.Name.Contains(query.Name));
-            }
-            if (query.Category.HasValue)
-            {
-                prods = prods.Where(p => p.Category == query.Category);
+                prods = prods.Where(p => p.Code.Contains(query.Code));
             }
             if (!string.IsNullOrWhiteSpace(query.SortBy))
             {
-                if (query.SortBy.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                if (query.SortBy.Equals("Code", StringComparison.OrdinalIgnoreCase))
                 {
-                    prods = query.IsDescending ? prods.OrderByDescending(s => s.Name) : prods.OrderBy(s => s.Name);
+                    prods = query.IsDescending ? prods.OrderByDescending(s => s.Code) : prods.OrderBy(s => s.Code);
                 }
             }
 
