@@ -1,7 +1,6 @@
-﻿using dotnet_Warehouse_Management_System.Products.Dtos;
-using dotnet_Warehouse_Management_System.Products.Model;
+﻿using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 
-namespace dotnet_Warehouse_Management_System.Products.Mappers
+namespace dotnet_Warehouse_Management_System.Products.Entities.Mappers
 {
     public static class ProductMapper
     {

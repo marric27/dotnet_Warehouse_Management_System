@@ -1,8 +1,7 @@
-﻿using dotnet_Warehouse_Management_System.Products.Dtos;
+﻿using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Products.Helpers;
-using dotnet_Warehouse_Management_System.Products.Model;
 
-namespace dotnet_Warehouse_Management_System.Products.Interfaces
+namespace dotnet_Warehouse_Management_System.Products.Entities
 {
     public interface IProductRepository
     {

@@ -1,9 +1,9 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Products.Dtos;
+using dotnet_Warehouse_Management_System.Products.Entities;
+using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
+using dotnet_Warehouse_Management_System.Products.Entities.Mappers;
 using dotnet_Warehouse_Management_System.Products.Helpers;
-using dotnet_Warehouse_Management_System.Products.Interfaces;
-using dotnet_Warehouse_Management_System.Products.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_Warehouse_Management_System.Products.Controller

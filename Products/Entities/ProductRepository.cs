@@ -1,12 +1,10 @@
 ﻿using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Products.Dtos;
+using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Products.Helpers;
-using dotnet_Warehouse_Management_System.Products.Interfaces;
-using dotnet_Warehouse_Management_System.Products.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace dotnet_Warehouse_Management_System.Products.Repository
+namespace dotnet_Warehouse_Management_System.Products.Entities
 {
     public class ProductRepository : IProductRepository
     {
