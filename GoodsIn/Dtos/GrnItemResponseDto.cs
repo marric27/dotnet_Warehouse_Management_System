@@ -4,6 +4,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
 {
     public class GrnItemResponseDto
     {
+        public long Id { get; set; }
         public string Code { get; set; }
         public string ProductCode { get; set; }
         public int ExpectedQty { get; set; }

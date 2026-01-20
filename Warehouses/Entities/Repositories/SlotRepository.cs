@@ -1,9 +1,10 @@
-﻿using dotnet_Warehouse_Management_System.Data;
+﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Helpers;
+using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 using Microsoft.EntityFrameworkCore;
 
-namespace dotnet_Warehouse_Management_System.Warehouses.Entities
+namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
 {
     public class SlotRepository : ISlotRepository
     {
@@ -14,7 +15,6 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities
         }
         public async Task<Slot> CreateAsync(Slot slot)
         {
-            slot.GenerateCode();
             await _context.Slots.AddAsync(slot);
             await _context.SaveChangesAsync();
             return slot;
@@ -33,30 +33,42 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities
 
         }
 
-        public async Task<List<Slot>> GetAllAsync(QueryObject query)
+        public async Task<Page<Slot>> GetAllAsync(QueryObject query)
         {
+            int pageNumber = Math.Max(0, query.PageNumber);
+            int pageSize = Math.Clamp(query.PageSize, 1, 100);
+
             var slots = _context.Slots.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Code))
             {
                 slots = slots.Where(s => s.Code.Contains(query.Code));
             }
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            slots = query.SortBy?.ToLower() switch
             {
-                if (query.SortBy.Equals("Code", StringComparison.OrdinalIgnoreCase))
-                {
-                    slots = query.IsDescending
-                        ? slots.OrderByDescending(s => s.Code)
-                        : slots.OrderBy(s => s.Code);
-                }
-            }
+                "code" => query.IsDescending
+                    ? slots.OrderByDescending(g => g.Code)
+                    : slots.OrderBy(g => g.Code),
 
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+                _ => query.IsDescending
+                    ? slots.OrderByDescending(g => g.Id)
+                    : slots.OrderBy(g => g.Id)
+            };
 
-            return await slots
-                .Skip(skipNumber)
-                .Take(query.PageSize)
+            var totalItems = await slots.CountAsync();
+
+            var items = await slots
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return new Page<Slot>
+            {
+                Content = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalElements = totalItems
+            };
         }
 
         public async Task<Slot?> GetByCodeAsync(string code)

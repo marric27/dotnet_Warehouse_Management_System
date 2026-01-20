@@ -8,6 +8,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
         {
             return new GrnItemResponseDto
             {
+                Id = item.Id,
                 Code = item.Code,
                 ProductCode = item.ProductCode,
                 ExpectedQty = item.ExpectedQty,

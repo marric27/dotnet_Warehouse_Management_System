@@ -44,16 +44,10 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             return grnItems.Select(grnItem => grnItem.ToResponseDto()).ToList();
         }
 
-        public async Task<bool> DeleteAsync(string code)
+        public async Task<GrnItemResponseDto?> DeleteAsync(string code)
         {
-            var grn = await _grnItemRepository.DeleteAsync(code);
-
-            if (grn == null)
-            {
-                return false;
-            }
-
-            return true;
+            var deleted = await _grnItemRepository.DeleteAsync(code);
+            return deleted?.ToResponseDto();
         }
 
         public async Task<GrnItemResponseDto> UpdateAsync(string code, GrnItemRequestDto grnItemRequestDto)
@@ -75,6 +69,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             var createdItem = await _grnItemRepository.CreateAsync(grnItem);
 
             return createdItem.ToResponseDto();
+        }
+
+        public async Task<GrnItemResponseDto?> GetByIdAsync(long id)
+        {
+            var item = await _grnItemRepository.GetById(id);
+            return item.ToResponseDto();
         }
     }
 }

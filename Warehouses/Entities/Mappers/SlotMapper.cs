@@ -1,6 +1,4 @@
-﻿using dotnet_Warehouse_Management_System.Products.Entities;
-using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
-using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
+﻿using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers
 {
@@ -18,7 +16,7 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers
             };
         }
 
-        public static Slot ToSLot(this SlotRequestDto dto)
+        public static Slot ToSlot(this SlotRequestDto dto)
         {
             return new Slot
             {

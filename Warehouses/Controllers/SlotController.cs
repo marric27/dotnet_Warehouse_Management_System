@@ -1,9 +1,10 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Warehouses.Entities;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Controllers
@@ -12,13 +13,11 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Controllers
     [Route("api/v1/slots")]
     public class SlotController : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
-        private readonly ISlotRepository _slotRepository;
+        private readonly ISlotService _slotService;
 
-        public SlotController(ApplicationDBContext context, ISlotRepository slotRepository)
+        public SlotController(ISlotService slotService)
         {
-            _slotRepository = slotRepository;
-            _context = context;
+            _slotService = slotService;
         }
 
         [HttpGet]
@@ -26,22 +25,14 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var slots = await _slotRepository.GetAllAsync(query);
-            var dtos = slots.Select(s => s.ToResponseDto()).ToList();
-            var pageResult = new Page<SlotResponseDto>
-            {
-                Content = dtos,
-                TotalElements = dtos.Count,
-                PageNumber = query.PageNumber,
-                PageSize = query.PageSize
-            };
-            return Ok(pageResult);
+            var slots = await _slotService.GetAllAsync(query);
+            return Ok(slots);
         }
         [HttpGet("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var slot = await _slotRepository.GetByCodeAsync(code);
+            var slot = await _slotService.GetByCodeAsync(code);
             if (slot == null)
             {
                 return NotFound();
@@ -49,12 +40,11 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Controllers
             return Ok(slot);
         }
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] SlotRequestDto slot)
+        public async Task<IActionResult> Create([FromBody] SlotRequestDto slotDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var _slot = slot.ToSLot();
-            await _slotRepository.CreateAsync(_slot);
-            return CreatedAtAction(nameof(GetByCode), new { code = _slot.Code }, _slot.ToResponseDto());
+            var slot = await _slotService.CreateAsync(slotDto);
+            return CreatedAtAction(nameof(GetByCode), new { code = slot.Code }, slot);
         }
 
     }

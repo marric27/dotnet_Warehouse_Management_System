@@ -2,6 +2,6 @@
 {
     public enum Category
     {
-        STANDARD = 1, CONTROLLED_DRUGS, FLAMMABLE
+        STANDARD , CONTROLLED_DRUGS, FLAMMABLE
     }
 }

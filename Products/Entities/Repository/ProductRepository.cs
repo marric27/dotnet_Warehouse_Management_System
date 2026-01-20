@@ -1,10 +1,11 @@
-﻿using dotnet_Warehouse_Management_System.Common.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace dotnet_Warehouse_Management_System.Products.Entities
+namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
 {
     public class ProductRepository : IProductRepository
     {
@@ -14,23 +15,42 @@ namespace dotnet_Warehouse_Management_System.Products.Entities
             _context = context;
         }
 
-        public async Task<List<Product>> GetAllAsync(QueryObject query)
+        public async Task<Page<Product>> GetAllAsync(QueryObject query)
         {
+            int pageNumber = Math.Max(0, query.PageNumber);
+            int pageSize = Math.Clamp(query.PageSize, 1, 100);
+
             var prods = _context.Products.AsNoTracking().AsQueryable();
+
             if (!string.IsNullOrWhiteSpace(query.Code))
             {
                 prods = prods.Where(p => p.Code.Contains(query.Code));
             }
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            prods = query.SortBy?.ToLower() switch
             {
-                if (query.SortBy.Equals("Code", StringComparison.OrdinalIgnoreCase))
-                {
-                    prods = query.IsDescending ? prods.OrderByDescending(s => s.Code) : prods.OrderBy(s => s.Code);
-                }
-            }
+                "code" => query.IsDescending
+                    ? prods.OrderByDescending(g => g.Code)
+                    : prods.OrderBy(g => g.Code),
 
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-            return await prods.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+                _ => query.IsDescending
+                    ? prods.OrderByDescending(g => g.Id)
+                    : prods.OrderBy(g => g.Id)
+            };
+
+            var totalItems = await prods.CountAsync();
+
+            var items = await prods
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Product>
+            {
+                Content = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalElements = totalItems
+            };
         }
 
         public async Task<Product?> GetByCodeAsync(string code)
@@ -41,7 +61,6 @@ namespace dotnet_Warehouse_Management_System.Products.Entities
 
         public async Task<Product> CreateAsync(Product product)
         {
-            product.GenerateCode();
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
             return product;

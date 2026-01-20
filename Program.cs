@@ -2,9 +2,11 @@ using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
-using dotnet_Warehouse_Management_System.Products.Entities;
-using dotnet_Warehouse_Management_System.Warehouses.Entities;
+using dotnet_Warehouse_Management_System.Products.Entities.Repository;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +27,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddOpenApi();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    options.JsonSerializerOptions.Converters.Add(
+        new JsonStringEnumConverter()
+    ));
+
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IGrnRepository, GrnRepository>();
 builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();

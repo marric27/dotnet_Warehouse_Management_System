@@ -55,31 +55,19 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             return grn.ToResponseDto();
         }
 
-        public async Task<List<GrnResponseDto>> GetAllAsync(QueryObject query)
+        public async Task<Page<GrnResponseDto>> GetAllAsync(QueryObject query)
         {
-            var grns = await _grnRepository.GetAllAsync();
+            var pagedGrns = await _grnRepository.GetAllAsync(query);
 
-            //if (!string.IsNullOrWhiteSpace(query.Code))
-            //{
-            //    grns = grns.Where(p => p.Code.Contains(query.Code));
-            //}
-            //if (!string.IsNullOrWhiteSpace(query.SortBy))
-            //{
-            //    if (query.SortBy.Equals("Code", StringComparison.OrdinalIgnoreCase))
-            //    {
-            //        grns = query.IsDescending ? grns.OrderByDescending(s => s.Code) : grns.OrderBy(s => s.Code);
-            //    }
-            //}
+            var pagedDto = new Page<GrnResponseDto>
+            {
+                PageNumber = pagedGrns.PageNumber,
+                PageSize = pagedGrns.PageSize,
+                TotalElements = pagedGrns.TotalElements,
+                Content = pagedGrns.Content.Select(g => g.ToResponseDto()).ToList()
+            };
 
-            //var skipNumber = (query.PageNumber - 1) * query.PageSize;
-            //return await grns.Skip(skipNumber).Take(query.PageSize).ToListAsync();
-
-
-
-
-
-
-            return grns.Select(grn => grn.ToResponseDto()).ToList();
+            return pagedDto;
         }
 
         public async Task<GrnResponseDto> UpdateAsync(string code, GrnRequestDto grnRequestDto)
@@ -89,6 +77,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
                 throw new KeyNotFoundException($"GRN {code} non trovata");
 
             return updated.ToResponseDto();
+        }
+
+        public async Task<GrnResponseDto?> GetByIdAsync(long id)
+        {
+            var grn = await _grnRepository.GetById(id);
+            return grn.ToResponseDto();
         }
     }
 }

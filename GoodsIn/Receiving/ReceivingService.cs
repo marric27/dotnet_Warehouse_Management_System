@@ -1,10 +1,8 @@
-﻿using dotnet_Warehouse_Management_System.Common.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
-using static System.Runtime.CompilerServices.RuntimeHelpers;
+
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 {
@@ -26,10 +24,11 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 
         public async Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grncode, GrnItemRequestDto grnItemRequestDto)
         {
+            //validazioni
             return await _grnItemService.CreateGrnItemForExistingGrnByCodeAsync(grncode, grnItemRequestDto);
         }
 
-        public Task<List<GrnResponseDto>> GetAllGrnsAsync(QueryObject query)
+        public Task<Page<GrnResponseDto>> GetAllGrnsAsync(QueryObject query)
         {
             return _grnService.GetAllAsync(query);
         }

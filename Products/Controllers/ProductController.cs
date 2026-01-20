@@ -1,9 +1,7 @@
-﻿using dotnet_Warehouse_Management_System.Common;
-using dotnet_Warehouse_Management_System.Common.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Products.Entities;
 using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
-using dotnet_Warehouse_Management_System.Products.Entities.Mappers;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_Warehouse_Management_System.Products.Controller
@@ -12,13 +10,10 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
     [Route("api/v1/products")]
     public class ProductController : ControllerBase
     {
-
-        private readonly ApplicationDBContext _context;
-        private readonly IProductRepository _productRepository;
-        public ProductController(ApplicationDBContext context, IProductRepository productRepository)
+        private readonly IProductService _productService;
+        public ProductController(IProductService productService)
         {
-            _productRepository = productRepository;
-            _context = context;
+            _productService = productService;
         }
 
         [HttpGet]
@@ -26,23 +21,15 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var products = await _productRepository.GetAllAsync(query);
-            var dtos = products.Select(p => p.ToResponseDto()).ToList();
-            var pageResult = new Page<ProductResponseDto>
-            {
-                Content = dtos,
-                TotalElements = dtos.Count,
-                PageNumber = query.PageNumber,
-                PageSize = query.PageSize
-            };
-            return Ok(pageResult);
+            var products = await _productService.GetAllAsync(query);
+            return Ok(products);
         }
 
         [HttpGet("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productRepository.GetByCodeAsync(code);
+            var prod = await _productService.GetByCodeAsync(code);
             if (prod == null)
             {
                 return NotFound();
@@ -54,30 +41,29 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         public async Task<IActionResult> Create([FromBody] ProductRequestDto product)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = product.ToProduct();
-            await _productRepository.CreateAsync(prod);
-            return CreatedAtAction(nameof(GetByCode), new { id = prod.Id }, prod.ToResponseDto());
+            var prod = await _productService.CreateAsync(product);
+            return CreatedAtAction(nameof(GetByCode), new { code = prod.Code }, prod);
         }
 
         [HttpPut("bycode/{code}")]
         public async Task<IActionResult> UpdateByCode([FromRoute] string code, [FromBody] ProductRequestDto dto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productRepository.UpdateAsync(code, dto);
+            var prod = await _productService.UpdateAsync(code, dto);
 
             if (prod == null)
             {
                 return NotFound();
             }
 
-            return Ok(prod.ToResponseDto());
+            return Ok(prod);
         }
 
         [HttpDelete("bycode/{code}")]
         public async Task<IActionResult> DeleteByCode([FromRoute] string code)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productRepository.DeleteAsync(code);
+            var prod = await _productService.DeleteAsync(code);
 
             if (prod == null)
             {

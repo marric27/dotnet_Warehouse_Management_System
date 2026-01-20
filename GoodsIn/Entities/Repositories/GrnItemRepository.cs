@@ -21,16 +21,16 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             return item;
         }
 
-        public async Task<bool> DeleteAsync(string code)
+        public async Task<GrnItem?> DeleteAsync(string code)
         {
-            var item = await GetByCodeAsync(code);
+            var item = await _context.GrnItems.FirstOrDefaultAsync(x => x.Code == code);
             if (item != null)
             {
-                _context.GrnItems.Remove(item);
-                await _context.SaveChangesAsync();
-                return true;
+                return null;
             }
-            return false;
+            _context.GrnItems.Remove(item);
+            await _context.SaveChangesAsync();
+            return item;
         }
 
         public async Task<List<GrnItem>> GetAllAsync(QueryObject query)
@@ -42,6 +42,13 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         public async Task<GrnItem?> GetByCodeAsync(string code)
         {
             return await _context.GrnItems.AsNoTracking().Where(i => i.Code == code).FirstOrDefaultAsync();
+        }
+
+        public async Task<GrnItem?> GetById(long id)
+        {
+            return await _context.GrnItems
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<GrnItem> UpdateAsync(string code, GrnItem item)

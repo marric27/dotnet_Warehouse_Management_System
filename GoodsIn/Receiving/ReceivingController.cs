@@ -1,12 +1,6 @@
-﻿using dotnet_Warehouse_Management_System.Common;
-using dotnet_Warehouse_Management_System.Common.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
-using dotnet_Warehouse_Management_System.GoodsIn.Services;
-using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
-using dotnet_Warehouse_Management_System.Products.Entities.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
@@ -15,11 +9,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
     [Route("api/v1/receiving")]
     public class ReceivingController : ControllerBase
     {
-        private readonly ApplicationDBContext _context;
         private readonly ReceivingService _receivingService;
-        public ReceivingController(ApplicationDBContext context, ReceivingService receivingService)
+        public ReceivingController(ReceivingService receivingService)
         {
-            _context = context;
             _receivingService = receivingService;
         }
 
@@ -28,17 +20,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
         public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var grns = await _receivingService.GetAllGrnsAsync(query);
-
-            var pageResult = new Page<GrnResponseDto>
-            {
-                Content = grns,
-                TotalElements = grns.Count,
-                PageNumber = query.PageNumber,
-                PageSize = query.PageSize
-            };
-            return Ok(pageResult);
+            var page = await _receivingService.GetAllGrnsAsync(query);
+            return Ok(page);
         }
 
         [HttpGet("grns/code/{code}")]
@@ -70,7 +53,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
             var item = await _receivingService.GetGrnItemByCodeAsync(code);
             if (item == null)
             {
-                return NotFound();
+                return NotFound($"GrnItem non trovato con codice {code}");
             }
             return Ok(item);
         }

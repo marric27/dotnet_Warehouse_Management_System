@@ -8,12 +8,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
     public interface IGrnItemService
     {
         Task<GrnItemResponseDto> CreateAsync(GrnItemRequestDto grnItemRequestDto);
-
+        Task<GrnItemResponseDto?> GetByIdAsync(long Id);
         Task<GrnItemResponseDto?> GetByCodeAsync(string code);
 
         Task<List<GrnItemResponseDto>> GetAllAsync(QueryObject query);
 
-        Task<bool> DeleteAsync(string code);
+        Task<GrnItemResponseDto> DeleteAsync(string code);
 
         Task<GrnItemResponseDto> UpdateAsync(string code, GrnItemRequestDto grnItemRequestDto);
 
