@@ -24,7 +24,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 
         public async Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grncode, GrnItemRequestDto grnItemRequestDto)
         {
-            //validazioni
+            //validazioni:
+            // se grn esiste
+            // se grn è closed state
+            // se prodotto da aggiungere esiste
+            // valida quantita
+            // progressione stati
             return await _grnItemService.CreateGrnItemForExistingGrnByCodeAsync(grncode, grnItemRequestDto);
         }
 

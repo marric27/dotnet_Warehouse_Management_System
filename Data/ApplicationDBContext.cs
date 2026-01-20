@@ -2,6 +2,7 @@
 using dotnet_Warehouse_Management_System.Products.Entities;
 using dotnet_Warehouse_Management_System.Warehouses.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
+using dotnet_Warehouse_Management_System.Customers.Entities;
 
 namespace dotnet_Warehouse_Management_System.Data
 {
@@ -33,5 +34,7 @@ namespace dotnet_Warehouse_Management_System.Data
         public DbSet<Slot> Slots { get; set; }
         public DbSet<Grn> Grns { get; set; }
         public DbSet<GrnItem> GrnItems { get; set; }
+
+        public DbSet<Customer> Customers { get; set; }
     }
 }

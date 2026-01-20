@@ -1,3 +1,5 @@
+using dotnet_Warehouse_Management_System.Customers.Entities.Repository;
+using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
@@ -47,6 +49,8 @@ builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
 builder.Services.AddScoped<IGrnService, GrnService>();
 builder.Services.AddScoped<IGrnItemService, GrnItemService>();
 builder.Services.AddScoped<ReceivingService, ReceivingService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 var app = builder.Build();
 

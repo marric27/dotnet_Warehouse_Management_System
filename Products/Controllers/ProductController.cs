@@ -1,5 +1,4 @@
 ﻿using dotnet_Warehouse_Management_System.Common.Helpers;
-using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using Microsoft.AspNetCore.Mvc;
