@@ -2,6 +2,7 @@
 using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
@@ -10,11 +11,15 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
     {
         private readonly IGrnService _grnService;
         private readonly IGrnItemService _grnItemService;
+        private readonly IProductService _productService;
+        private readonly IGrnItemStateService _grnItemStateService;
 
-        public ReceivingService(IGrnService grnService, IGrnItemService grnItemService)
+        public ReceivingService(IGrnService grnService, IGrnItemService grnItemService, IProductService productService, IGrnItemStateService grnItemStateService)
         {
             _grnService = grnService;
             _grnItemService = grnItemService;
+            _productService = productService;
+            _grnItemStateService = grnItemStateService;
         }
 
         public Task<GrnResponseDto> CreateGrn(GrnRequestDto grnRequestDto)
@@ -24,12 +29,25 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 
         public async Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grncode, GrnItemRequestDto grnItemRequestDto)
         {
-            //validazioni:
-            // se grn esiste
-            // se grn è closed state
-            // se prodotto da aggiungere esiste
-            // valida quantita
+            var grn = await _grnService.GetByCodeAsync(grncode);
+            if (grn == null)
+            {
+                throw new Exception($"Grn {grncode} non existing");
+            }
+            else if (grn.State == State.CLOSED)
+            {
+                throw new Exception($"Grn {grncode} in closed state");
+            }
+            var prodToAdd = await _productService.GetByCodeAsync(grnItemRequestDto.ProductCode);
+            if (prodToAdd == null) {
+                throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
+            }
+
+            _grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
             // progressione stati
+
+
+
             return await _grnItemService.CreateGrnItemForExistingGrnByCodeAsync(grncode, grnItemRequestDto);
         }
 

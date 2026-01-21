@@ -62,10 +62,10 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
         public async Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grnCode, GrnItemRequestDto grnItemRequestDto)
         {
             var grn = await _grnRepository.GetByCodeAsync(grnCode);
-            grnItemRequestDto.GrnId = grn.Id;
             var grnItem = grnItemRequestDto.ToGrnItem();
             grnItem.GenerateCode();
             grnItem.State = State.OPEN;
+            grnItem.GrnId = grn.Id;
             var createdItem = await _grnItemRepository.CreateAsync(grnItem);
 
             return createdItem.ToResponseDto();

@@ -30,7 +30,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 CompliantQty = dto.CompliantQty,
                 NotCompliantQty = dto.NotCompliantQty,
                 Notes = dto.Notes,
-                GrnId = dto.GrnId,
             };
         }
     }
