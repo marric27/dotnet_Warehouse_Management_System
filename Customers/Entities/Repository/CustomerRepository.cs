@@ -32,7 +32,7 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Repository
             return cust;
         }
 
-        public async Task<Page<Customer>> GetAllAsync(QueryObject query)
+        public async Task<Page<Customer>> GetAllPaginatedAsync(QueryObject query)
         {
             int pageNumber = Math.Max(0, query.PageNumber);
             int pageSize = Math.Clamp(query.PageSize, 1, 100);
@@ -68,6 +68,11 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Repository
                 PageSize = pageSize,
                 TotalElements = totalItems
             };
+        }
+
+        public async Task<List<Customer>> GetAllAsync()
+        {
+            return await _context.Customers.AsNoTracking().ToListAsync();
         }
 
         public async Task<Customer?> GetByCodeAsync(string code)

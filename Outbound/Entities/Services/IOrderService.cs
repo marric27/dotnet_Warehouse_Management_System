@@ -6,7 +6,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 {
     public interface IOrderService
     {
-        Task<Page<OrderResponseDto>> GetAllAsync(QueryObject query);
+        Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query);
         Task<OrderResponseDto?> GetByCodeAsync(string code);
         Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto);
         Task<OrderResponseDto?> UpdateAsync(string code, OrderRequestDto OrderDto);

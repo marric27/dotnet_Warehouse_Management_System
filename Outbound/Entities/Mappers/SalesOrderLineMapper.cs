@@ -8,6 +8,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
         {
             return new SalesOrderLineResponseDto
             {
+                id = entity.Id,
                 salesOrderLineNumber = entity.SalesOrderLineNumber,
                 productCode = entity.ProductCode,
                 quantity = entity.Quantity,

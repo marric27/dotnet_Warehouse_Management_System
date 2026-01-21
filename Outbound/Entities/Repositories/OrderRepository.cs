@@ -33,14 +33,48 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
             return order;
         }
 
-        public Task<Page<Order>> GetAllAsync(QueryObject query)
+        public async Task<Page<Order>> GetAllAsync(QueryObject query)
         {
-            throw new NotImplementedException();
+            int pageNumber = Math.Max(0, query.PageNumber);
+            int pageSize = Math.Clamp(query.PageSize, 1, 100);
+
+            var orders = _context.Orders.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(query.Code))
+            {
+                orders = orders.Where(o => o.Code.Contains(query.Code));
+            }
+            orders = query.SortBy?.ToLower() switch
+            {
+                "code" => query.IsDescending
+                    ? orders.OrderByDescending(g => g.Code)
+                    : orders.OrderBy(g => g.Code),
+
+                _ => query.IsDescending
+                    ? orders.OrderByDescending(g => g.Id)
+                    : orders.OrderBy(g => g.Id)
+            };
+
+            var totalItems = await orders.CountAsync();
+
+            var items = await orders
+                .Skip(pageNumber * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new Page<Order>
+            {
+                Content = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalElements = totalItems
+            };
         }
 
-        public Task<Order?> GetByCodeAsync(string code)
+        public async Task<Order?> GetByCodeAsync(string code)
         {
-            throw new NotImplementedException();
+            return await _context.Orders.Include(o => o.SalesOrderLineList).AsNoTracking()
+                .Where(o => o.Code == code).FirstOrDefaultAsync();
         }
 
         public Task<Order> UpdateAsync(string code, OrderRequestDto orderDto)

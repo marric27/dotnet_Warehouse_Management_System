@@ -17,11 +17,21 @@ namespace dotnet_Warehouse_Management_System.Customers.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
+        public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var customers = await _customerService.GetAllAsync(query);
+            var customers = await _customerService.GetAllPaginatedAsync(query);
+            return Ok(customers);
+        }
+
+        [HttpGet]
+        [Route("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var customers = await _customerService.GetAllAsync();
             return Ok(customers);
         }
 

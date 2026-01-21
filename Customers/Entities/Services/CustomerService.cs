@@ -28,9 +28,9 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Services
             return deleted?.ToResponseDto();
         }
 
-        public async Task<Page<CustomerResponseDto>> GetAllAsync(QueryObject query)
+        public async Task<Page<CustomerResponseDto>> GetAllPaginatedAsync(QueryObject query)
         {
-            var customers = await _customerRepository.GetAllAsync(query);
+            var customers = await _customerRepository.GetAllPaginatedAsync(query);
 
             var pagedDto = new Page<CustomerResponseDto>
             {
@@ -40,6 +40,12 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Services
                 Content = customers.Content.Select(p => p.ToResponseDto()).ToList()
             };
             return pagedDto;
+        }
+
+        public async Task<List<CustomerResponseDto>> GetAllAsync()
+        {
+            var customers = await _customerRepository.GetAllAsync();
+            return customers.Select(c => c.ToResponseDto()).ToList();
         }
 
         public async Task<CustomerResponseDto?> GetByCodeAsync(string code)

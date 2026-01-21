@@ -31,18 +31,16 @@ namespace dotnet_Warehouse_Management_System.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Order>()
-                .HasIndex(g => g.Code)
+                .HasIndex(o => o.Code)
                 .IsUnique();
+
             modelBuilder.Entity<Order>()
-                .HasMany(g => g.SalesOrderLines)
-                .WithOne(i => i.Order)
-                .HasForeignKey(i => i.OrderId)
+                .HasMany(o => o.SalesOrderLineList)
+                .WithOne(l => l.Order)
+                .HasForeignKey(l => l.OrderId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
-            modelBuilder.Entity<SalesOrderLine>()
-                .HasOne(i => i.Order)
-                .WithMany(g => g.SalesOrderLines)
-                .HasForeignKey(i => i.OrderId)
-                .OnDelete(DeleteBehavior.Cascade);
+
         }
 
         public DbSet<Product> Products { get; set; }

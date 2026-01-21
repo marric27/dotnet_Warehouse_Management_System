@@ -1,12 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using dotnet_Warehouse_Management_System.Outbound.Entities;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Dtos
 {
     public class OrderRequestDto
     {
-        [Required]
+        public DateTime Date { get; set; }
         public string CustomerCode { get; set; }
-        [Required]
-        public List<SalesOrderLineRequestDto> SalesOrderLineList;
+        public OrderState State { get; set; }
+        public List<SalesOrderLineRequestDto> SalesOrderLineList { get; set; } = new List<SalesOrderLineRequestDto>();
     }
 }

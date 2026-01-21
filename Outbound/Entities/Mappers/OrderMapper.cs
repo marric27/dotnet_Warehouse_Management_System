@@ -12,7 +12,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
                 Date = order.date,
                 CustomerCode = order.CustomerCode,
                 State = order.State,
-                SalesOrderLines = order.SalesOrderLines
+                SalesOrderLineList = order.SalesOrderLineList
                     .Select(x => x.ToResponseDto())
                     .ToList()
             };
@@ -24,13 +24,20 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
             {
                 CustomerCode = dto.CustomerCode,
                 date = DateTime.UtcNow,
-                SalesOrderLines = dto.SalesOrderLineList
-                    .Select(x => x.ToEntity())
-                    .ToList()
+                State = dto.State
             };
 
-            order.GenerateCode();
+            order.SalesOrderLineList = dto.SalesOrderLineList
+                .Select((x, index) =>
+                {
+                    var line = x.ToEntity();
+                    line.Order = order;
+                    line.SalesOrderLineNumber = index + 1;
+                    return line;
+                })
+                .ToList();
             return order;
         }
+
     }
 }

@@ -9,7 +9,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Dtos
         public DateTime Date { get; set; }
         public string CustomerCode { get; set; }
         public OrderState State { get; set; }
-        public List<SalesOrderLineResponseDto> SalesOrderLines { get; set; } = new List<SalesOrderLineResponseDto>();
+        public List<SalesOrderLineResponseDto> SalesOrderLineList { get; set; } = new List<SalesOrderLineResponseDto>();
 
 
     }

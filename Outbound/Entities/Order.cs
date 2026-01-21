@@ -7,7 +7,7 @@
         public DateTime date { get; set; }
         public string CustomerCode { get; set; }
         public OrderState State { get; set; }
-        public List<SalesOrderLine> SalesOrderLines { get; set; } = new List<SalesOrderLine>();
+        public List<SalesOrderLine> SalesOrderLineList { get; set; } = new List<SalesOrderLine>();
         public void GenerateCode()
         {
             Code = $"ORD-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";

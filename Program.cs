@@ -5,6 +5,9 @@ using dotnet_Warehouse_Management_System.GoodsIn;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
+using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
+using dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
@@ -49,11 +52,14 @@ builder.Services.AddScoped<IGrnRepository, GrnRepository>();
 builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
 builder.Services.AddScoped<IGrnService, GrnService>();
 builder.Services.AddScoped<IGrnItemService, GrnItemService>();
-builder.Services.AddScoped<ReceivingService, ReceivingService>();
+builder.Services.AddScoped<ReceivingService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IGrnItemStateService, GrnItemStateService>();
-
+builder.Services.AddScoped<ISalesOrderLineRepository, SalesOrderLineRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<SalesOrderService>();
 
 var app = builder.Build();
 

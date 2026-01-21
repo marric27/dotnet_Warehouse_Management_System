@@ -6,7 +6,8 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Services
 {
     public interface ICustomerService
     {
-        Task<Page<CustomerResponseDto>> GetAllAsync(QueryObject query);
+        Task<Page<CustomerResponseDto>> GetAllPaginatedAsync(QueryObject query);
+        Task<List<CustomerResponseDto>> GetAllAsync();
         Task<CustomerResponseDto?> GetByCodeAsync(string code);
         Task<CustomerResponseDto> CreateAsync(CustomerRequestDto CustomerDto);
         Task<CustomerResponseDto?> UpdateAsync(string code, CustomerRequestDto CustomerDto);

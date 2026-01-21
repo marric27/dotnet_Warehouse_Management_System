@@ -16,11 +16,21 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
+        public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var products = await _productService.GetAllAsync(query);
+            var products = await _productService.GetAllPaginatedAsync(query);
+            return Ok(products);
+        }
+
+        [HttpGet]
+        [Route("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var products = await _productService.GetAllAsync();
             return Ok(products);
         }
 

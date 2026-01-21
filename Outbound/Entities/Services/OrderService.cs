@@ -15,7 +15,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         }
         public async Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto)
         {
-            throw new NotImplementedException();
+            var order = OrderDto.ToEntity();
+            order.GenerateCode();
+            var created = await _orderRepository.CreateAsync(order);
+            return created.ToResponseDto();
         }
 
         public async Task<OrderResponseDto?> DeleteAsync(string code)
@@ -23,7 +26,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Page<OrderResponseDto>> GetAllAsync(QueryObject query)
+        public async Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query)
         {
             var orders = await _orderRepository.GetAllAsync(query);
             return orders.Map(o => o.ToResponseDto());
@@ -31,7 +34,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 
         public async Task<OrderResponseDto?> GetByCodeAsync(string code)
         {
-            throw new NotImplementedException();
+            var order = await _orderRepository.GetByCodeAsync(code);
+            return order?.ToResponseDto();
         }
 
         public async Task<OrderResponseDto?> UpdateAsync(string code, OrderRequestDto OrderDto)
