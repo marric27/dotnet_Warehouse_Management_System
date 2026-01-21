@@ -19,16 +19,16 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             return grn;
         }
 
-        public async Task<bool> DeleteAsync(string code)
+        public async Task<Grn?> DeleteAsync(string code)
         {
             var grn = await GetByCodeAsync(code);
-            if (grn != null)
+            if (grn == null)
             {
-                _context.Grns.Remove(grn);
-                await _context.SaveChangesAsync();
-                return true;
+                return null;
             }
-            return false;
+            _context.Grns.Remove(grn);
+            await _context.SaveChangesAsync();
+            return grn;
         }
 
         public async Task<Page<Grn>> GetAllAsync(QueryObject query)

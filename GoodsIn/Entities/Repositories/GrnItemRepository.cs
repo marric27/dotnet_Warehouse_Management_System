@@ -24,7 +24,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         public async Task<GrnItem?> DeleteAsync(string code)
         {
             var item = await _context.GrnItems.FirstOrDefaultAsync(x => x.Code == code);
-            if (item != null)
+            if (item == null)
             {
                 return null;
             }
