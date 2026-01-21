@@ -17,15 +17,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
         public async Task<Page<ProductResponseDto>> GetAllAsync(QueryObject query)
         {
             var products = await _productRepository.GetAllAsync(query);
-
-            var pagedDto = new Page<ProductResponseDto>
-            {
-                PageNumber = products.PageNumber,
-                PageSize = products.PageSize,
-                TotalElements = products.TotalElements,
-                Content = products.Content.Select(p => p.ToResponseDto()).ToList()
-            };
-            return pagedDto;
+            return products.Map(p => p.ToResponseDto());
         }
 
         public async Task<ProductResponseDto?> GetByCodeAsync(string code)
