@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Warehouses.Entities;
 
 namespace dotnet_Warehouse_Management_System.Products.Entities
 {
@@ -8,6 +9,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities
         public string Name { get; set; } = string.Empty;
         public string Code { get; set; } = string.Empty;
         public Category Category { get; set; }
+        public ICollection<Slot> Slots { get; set; } = [];
 
         public void GenerateCode()
         {

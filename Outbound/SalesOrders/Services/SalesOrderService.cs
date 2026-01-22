@@ -48,5 +48,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services
         {
             return await _orderService.GetAllPaginatedAsync(query);
         }
+
+        public async Task<List<OrderResponseDto>> GetAll()
+        {
+            return await _orderService.GetAllAsync();
+        }
     }
 }

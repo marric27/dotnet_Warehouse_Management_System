@@ -8,11 +8,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
         {
             return new OrderResponseDto
             {
-                Code = order.Code,
-                Date = order.date,
-                CustomerCode = order.CustomerCode,
-                State = order.State,
-                SalesOrderLineList = order.SalesOrderLineList
+                id = order.Id,
+                code = order.Code,
+                date = order.date,
+                customerCode = order.CustomerCode,
+                state = order.State,
+                salesOrderLineList = order.SalesOrderLineList
                     .Select(x => x.ToResponseDto())
                     .ToList()
             };

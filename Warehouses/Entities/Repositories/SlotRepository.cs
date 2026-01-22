@@ -76,6 +76,11 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
             return await _context.Slots.AsNoTracking().Where(s => s.Code == code).FirstOrDefaultAsync();
         }
 
+        public async Task<Slot?> GetSlotContainingProduct(string productCode)
+        {
+            return await _context.Slots.AsNoTracking().Where(s => s.Product.Code == productCode).FirstOrDefaultAsync();
+        }
+
         public Task<Slot> UpdateAsync(string code, SlotRequestDto productDto)
         {
             throw new NotImplementedException();

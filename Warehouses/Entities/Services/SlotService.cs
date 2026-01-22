@@ -54,5 +54,11 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
             var deleted = await _slotRepository.DeleteAsync(code);
             return deleted?.ToResponseDto();
         }
+
+        public async Task<SlotResponseDto?> GetSlotContainingProduct(string productCode)
+        {
+            var slot = await _slotRepository.GetSlotContainingProduct(productCode);
+            return slot?.ToResponseDto();
+        }
     }
 }

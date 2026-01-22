@@ -33,7 +33,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
             return order;
         }
 
-        public async Task<Page<Order>> GetAllAsync(QueryObject query)
+        public async Task<List<Order>> GetAllAsync()
+        {
+            return await _context.Orders.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<Page<Order>> GetAllPaginatedAsync(QueryObject query)
         {
             int pageNumber = Math.Max(0, query.PageNumber);
             int pageSize = Math.Clamp(query.PageSize, 1, 100);
@@ -77,9 +82,31 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
                 .Where(o => o.Code == code).FirstOrDefaultAsync();
         }
 
+        public async Task<List<Order>> GetByStateAndIds(OrderState state, List<long> ids)
+        {
+            return await _context.Orders
+                .Include(o => o.SalesOrderLineList)
+                .Where(o =>
+                    (o.State == state) &&
+                    (ids == null || ids.Contains(o.Id))).ToListAsync();
+        }
+
         public Task<Order> UpdateAsync(string code, OrderRequestDto orderDto)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Order> UpdateStateAsync(string code, OrderState state)
+        {
+            var existing = await _context.Orders.FirstOrDefaultAsync(o => o.Code == code);
+            if (existing == null)
+            {
+                return null;
+            }
+
+            existing.State = state;
+            await _context.SaveChangesAsync();
+            return existing;
         }
     }
 }

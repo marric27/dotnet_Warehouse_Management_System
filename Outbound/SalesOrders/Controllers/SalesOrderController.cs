@@ -22,7 +22,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var order = await _salesOrderService.CreateOrderAndAssign(orderDto.CustomerCode, orderDto);
-            return CreatedAtAction(nameof(GetByCode), new { code = order.Code }, order);
+            return CreatedAtAction(nameof(GetByCode), new { code = order.code }, order);
         }
 
         [HttpGet("orders/code/{code}")]
@@ -42,6 +42,14 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var ord = await _salesOrderService.GetAllPaginated(query);
+            return Ok(ord);
+        }
+
+        [HttpGet("orders")]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var ord = await _salesOrderService.GetAll();
             return Ok(ord);
         }
     }

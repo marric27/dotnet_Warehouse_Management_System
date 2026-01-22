@@ -26,9 +26,15 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             throw new NotImplementedException();
         }
 
+        public async Task<List<OrderResponseDto>> GetAllAsync()
+        {
+            var orders = await _orderRepository.GetAllAsync();
+            return orders.Select(o => o.ToResponseDto()).ToList();  
+        }
+
         public async Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query)
         {
-            var orders = await _orderRepository.GetAllAsync(query);
+            var orders = await _orderRepository.GetAllPaginatedAsync(query);
             return orders.Map(o => o.ToResponseDto());
         }
 
@@ -38,9 +44,21 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             return order?.ToResponseDto();
         }
 
+        public async Task<List<OrderResponseDto>> GetByStateAndIdsAsync(OrderState state, List<long> ids)
+        {
+            var order = await _orderRepository.GetByStateAndIds(state, ids);
+            return [.. order.Select(order => order.ToResponseDto())];
+        }
+
         public async Task<OrderResponseDto?> UpdateAsync(string code, OrderRequestDto OrderDto)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<OrderResponseDto?> UpdateStateAsync(string code, OrderState state)
+        {
+            var order = await _orderRepository.UpdateStateAsync(code, state);
+            return order.ToResponseDto();
         }
     }
 }

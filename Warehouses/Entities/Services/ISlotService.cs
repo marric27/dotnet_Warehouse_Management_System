@@ -12,5 +12,6 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
         Task<SlotResponseDto> CreateAsync(SlotRequestDto slotDto);
         Task<SlotResponseDto?> UpdateAsync(string code, SlotRequestDto slotDto);
         Task<SlotResponseDto?> DeleteAsync(string code);
+        Task<SlotResponseDto?> GetSlotContainingProduct(string productCode);
     }
 }

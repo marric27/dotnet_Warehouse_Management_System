@@ -5,11 +5,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Dtos
 {
     public class OrderResponseDto
     {
-        public string Code { get; set; }
-        public DateTime Date { get; set; }
-        public string CustomerCode { get; set; }
-        public OrderState State { get; set; }
-        public List<SalesOrderLineResponseDto> SalesOrderLineList { get; set; } = new List<SalesOrderLineResponseDto>();
+        public long id { get; set; }
+        public string code { get; set; }
+        public DateTime date { get; set; }
+        public string customerCode { get; set; }
+        public OrderState state { get; set; }
+        public List<SalesOrderLineResponseDto> salesOrderLineList { get; set; } = [];
 
 
     }

@@ -7,11 +7,13 @@ using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
+using dotnet_Warehouse_Management_System.Outbound.Release.Services;
 using dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,9 +37,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(
-        new JsonStringEnumConverter()
-    ));
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
@@ -60,6 +63,10 @@ builder.Services.AddScoped<ISalesOrderLineRepository, SalesOrderLineRepository>(
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<SalesOrderService>();
+builder.Services.AddScoped<PicklistGenService>();
+builder.Services.AddScoped<IPicklistService, PicklistService>();
+builder.Services.AddScoped<IPicklistRepository, PicklistRepository>();
+
 
 var app = builder.Build();
 

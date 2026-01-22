@@ -41,6 +41,21 @@ namespace dotnet_Warehouse_Management_System.Data
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
+            modelBuilder.Entity<Picklist>()
+                .HasIndex(o => o.Code) .IsUnique();
+            modelBuilder.Entity<Picklist>()
+                .HasMany(p => p.PicklistItemList)
+                .WithOne(i => i.Picklist)
+                .HasForeignKey(i => i.PicklistId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Slot>()
+                .HasOne(s => s.Product)
+                .WithMany(p => p.Slots)
+                .HasForeignKey(s => s.ProductId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+
         }
 
         public DbSet<Product> Products { get; set; }
@@ -50,5 +65,7 @@ namespace dotnet_Warehouse_Management_System.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; private set; }
         public DbSet<SalesOrderLine> SalesOrderLines { get; set; }
+        public DbSet<Picklist> Picklists { get; set; }
+        public DbSet<PicklistItem> PicklistItems { get; set; }
     }
 }

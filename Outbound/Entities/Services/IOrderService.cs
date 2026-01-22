@@ -11,5 +11,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto);
         Task<OrderResponseDto?> UpdateAsync(string code, OrderRequestDto OrderDto);
         Task<OrderResponseDto?> DeleteAsync(string code);
+        Task<List<OrderResponseDto>> GetByStateAndIdsAsync(OrderState state, List<long> ids);
+        Task<OrderResponseDto?> UpdateStateAsync(string code, OrderState state);
+        Task<List<OrderResponseDto>> GetAllAsync();
     }
 }
