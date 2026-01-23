@@ -35,7 +35,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                         Code = $"PL-{Guid.NewGuid().ToString()[..8].ToUpper()}",
                         CustomerCode = order.customerCode,
                         ReleaseNumber = _releaseNumber,
-                        PicklistItemList = []
+                        pickListItemList = []
                     };
 
                     pickListMap[order.customerCode] = pickListDto;
@@ -51,14 +51,14 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                         code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",
                         productCode = productCode,
                         State = Common.PicklistItemState.OPEN,
-                        qty = 0,
+                        Quantity = 0,
                         PickingSequence = 1,//slot.PickingSequence,
                         SlotCode = "slotcodeprova",//slot.Code,
                         salesOrderCode = order.code,
                         salesOrderLineNumber = line.salesOrderLineNumber
                     };
 
-                    pickListDto.PicklistItemList.Add(itemDto);
+                    pickListDto.pickListItemList.Add(itemDto);
                     await _orderService.UpdateStateAsync(order.code, OrderState.PICKING);
                 }
             }

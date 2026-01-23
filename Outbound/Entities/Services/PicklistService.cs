@@ -16,7 +16,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         public async Task<PicklistDto> CreateAsync(PicklistDto picklistDto)
         {
             Console.WriteLine(
-                $"DTO items count: {picklistDto.PicklistItemList?.Count ?? -1}"
+                $"DTO items count: {picklistDto.pickListItemList?.Count ?? -1}"
             );
 
             var picklist = picklistDto.ToEntity();

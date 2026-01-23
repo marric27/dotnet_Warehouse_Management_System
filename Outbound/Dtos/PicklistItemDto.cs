@@ -8,7 +8,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Dtos
         public string code { get; set; }
         public string productCode { get; set; }
         public PicklistItemState State { get; set; }
-        public int qty { get; set; }
+        public int Quantity { get; set; }
         public int PickedQty { get; set; }
         public int PickingSequence { get; set; }
         public ErrorReason ErrorReason { get; set; }

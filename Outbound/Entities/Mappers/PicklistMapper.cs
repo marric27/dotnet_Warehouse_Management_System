@@ -15,7 +15,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
                 Code = entity.Code,
                 ReleaseNumber = entity.ReleaseNumber,
                 CustomerCode = entity.CustomerCode,
-                PicklistItemList = entity.PicklistItemList?
+                pickListItemList = entity.PicklistItemList?
                     .Select(p => p.ToResponseDto())
                     .ToList()
             };
@@ -31,7 +31,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
                 Code = dto.Code,
                 ReleaseNumber = dto.ReleaseNumber,
                 CustomerCode = dto.CustomerCode,
-                PicklistItemList = dto.PicklistItemList?
+                PicklistItemList = dto.pickListItemList?
                 .Select(PicklistItemMapper.ToEntity)
                 .ToList()
             };

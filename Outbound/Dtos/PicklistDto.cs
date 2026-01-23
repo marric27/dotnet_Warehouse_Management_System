@@ -5,6 +5,6 @@
         public string Code { get; set; }
         public string ReleaseNumber { get; set; }
         public string CustomerCode { get; set; }
-        public List<PicklistItemDto> PicklistItemList { get; set; } = [];
+        public List<PicklistItemDto> pickListItemList { get; set; } = [];
     }
 }
