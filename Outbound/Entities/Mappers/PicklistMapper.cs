@@ -12,6 +12,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
 
             return new PicklistDto
             {
+                Id = entity.Id,
                 Code = entity.Code,
                 ReleaseNumber = entity.ReleaseNumber,
                 CustomerCode = entity.CustomerCode,

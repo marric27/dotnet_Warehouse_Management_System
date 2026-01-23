@@ -2,6 +2,6 @@
 {
     public enum PicklistItemState
     {
-        OPEN, PICKED
+        OPEN = 1, PICKED
     }
 }

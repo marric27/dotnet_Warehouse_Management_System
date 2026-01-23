@@ -3,27 +3,24 @@ using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Outbound.Dtos;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Mappers;
+using dotnet_Warehouse_Management_System.Picking.Dtos;
+using Microsoft.EntityFrameworkCore;
+using dotnet_Warehouse_Management_System.Outbound.Mappers;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 {
     public class PicklistService : IPicklistService
     {
         private readonly IPicklistRepository _picklistRepository;
-        public PicklistService(IPicklistRepository picklistRepository)
+        private readonly IPicklistItemRepository _picklistItemRepository;
+        public PicklistService(IPicklistRepository picklistRepository, IPicklistItemRepository picklistItemRepository)
         {
             _picklistRepository = picklistRepository;
+            _picklistItemRepository = picklistItemRepository;
         }
         public async Task<PicklistDto> CreateAsync(PicklistDto picklistDto)
         {
-            Console.WriteLine(
-                $"DTO items count: {picklistDto.pickListItemList?.Count ?? -1}"
-            );
-
             var picklist = picklistDto.ToEntity();
-            Console.WriteLine(
-                $"ENTITY items count: {picklist.PicklistItemList.Count}"
-            );
-
             var created = await _picklistRepository.CreateAsync(picklist);
             return created.ToResponseDto();
         }
@@ -45,5 +42,13 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             var pl = await _picklistRepository.GetByCodeAsync(code);
             return pl.ToResponseDto();
         }
+
+        public async Task<PicklistItemDto?> GetNextPickListItemAsync(NextItemRequest request)
+        {
+            var plIds = request.PickListIds;
+            var item = await _picklistItemRepository.FindItemsByStateOrdered(plIds, PicklistItemState.OPEN);
+            return item?.ToResponseDto();
+        }
+
     }
 }

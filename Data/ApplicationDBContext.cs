@@ -4,6 +4,7 @@ using dotnet_Warehouse_Management_System.Warehouses.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.Customers.Entities;
 using dotnet_Warehouse_Management_System.Outbound.Entities;
+using dotnet_Warehouse_Management_System.Picking.Entities;
 
 namespace dotnet_Warehouse_Management_System.Data
 {
@@ -55,6 +56,21 @@ namespace dotnet_Warehouse_Management_System.Data
                 .HasForeignKey(s => s.ProductId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            //modelBuilder.Entity<PicklistItem>()
+            //    .Property(p => p.State)
+            //    .HasConversion<string>();
+
+            //modelBuilder.Entity<PicklistItem>()
+            //    .Property(p => p.ErrorReason)
+            //    .HasConversion<string>();
+
+            modelBuilder.Entity<PicklistItem>()
+                .HasMany(p => p.PickingInfos)
+                .WithOne(pi => pi.PickListItem)
+                .HasForeignKey(pi => pi.PickListItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
 
         }
 
@@ -67,5 +83,6 @@ namespace dotnet_Warehouse_Management_System.Data
         public DbSet<SalesOrderLine> SalesOrderLines { get; set; }
         public DbSet<Picklist> Picklists { get; set; }
         public DbSet<PicklistItem> PicklistItems { get; set; }
+        public DbSet<PickingInfo> PickingInfos { get; set; }
     }
 }

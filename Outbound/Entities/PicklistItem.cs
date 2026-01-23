@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Picking.Entities;
 using System;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities
@@ -18,6 +19,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities
         public int SalesOrderLineNumber { get; set; }
         public long PicklistId { get; set; }
         public Picklist Picklist { get; set; }
+        public List<PickingInfo> PickingInfos { get; set; } = [];
 
     }
 }

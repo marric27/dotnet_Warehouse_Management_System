@@ -45,7 +45,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 {
                     string productCode = line.productCode;
                     //var slot = await _slotService.GetSlotContainingProduct(productCode);
-                    // ######### implement stockunit first
+                    // ######### implement stockunit first //TODO
                     PicklistItemDto itemDto = new()
                     {
                         code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",

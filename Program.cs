@@ -9,6 +9,9 @@ using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
 using dotnet_Warehouse_Management_System.Outbound.Release.Services;
 using dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services;
+using dotnet_Warehouse_Management_System.Picking.Entities.Repository;
+using dotnet_Warehouse_Management_System.Picking.Entities.Service;
+using dotnet_Warehouse_Management_System.Picking.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
@@ -66,7 +69,10 @@ builder.Services.AddScoped<SalesOrderService>();
 builder.Services.AddScoped<PicklistGenService>();
 builder.Services.AddScoped<IPicklistService, PicklistService>();
 builder.Services.AddScoped<IPicklistRepository, PicklistRepository>();
-
+builder.Services.AddScoped<IPicklistItemRepository, PicklistItemRepository>();
+builder.Services.AddScoped<IPickingInfoRepository, PickingInfoRepository>();
+builder.Services.AddScoped<IPickingInfoService, PickingInfoService>();
+builder.Services.AddScoped<PickingService>();
 
 var app = builder.Build();
 

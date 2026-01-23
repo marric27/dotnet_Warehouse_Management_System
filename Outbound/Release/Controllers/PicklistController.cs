@@ -45,5 +45,13 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
             var pl = await _picklistService.GetAllPaginatedAsync(query);
             return Ok(pl);
         }
+
+        [HttpGet("release")]
+        public async Task<IActionResult> GetAll()
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var pl = await _picklistService.GetAllAsync();
+            return Ok(pl);
+        }
     }
 }
