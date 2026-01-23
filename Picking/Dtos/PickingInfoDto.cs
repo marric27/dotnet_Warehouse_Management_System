@@ -11,7 +11,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Dtos
         public string BatchNumber { get; set; }
         public DateTime ExpirationDate { get; set; }
         public int Quantity { get; set; }
-        //public long PickListItemId { get; set; }
-        //public PicklistItem PickListItem { get; set; }
+        public long PicklistItemId { get; set; }
+        public string PicklistItemCode { get; set; }
     }
 }

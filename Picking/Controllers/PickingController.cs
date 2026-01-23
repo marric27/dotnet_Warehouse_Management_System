@@ -27,6 +27,14 @@ namespace dotnet_Warehouse_Management_System.Picking.Controllers
             return Ok(nextItem);
         }
 
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmPicking([FromBody] ConfirmPickingRequest request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            _pickingService.ConfirmPicking(request);
+            return Ok("picking confirmed");
+        }
+
 
 
     }

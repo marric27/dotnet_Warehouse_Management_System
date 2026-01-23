@@ -69,7 +69,10 @@ namespace dotnet_Warehouse_Management_System.Data
                 .WithOne(pi => pi.PickListItem)
                 .HasForeignKey(pi => pi.PickListItemId)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            modelBuilder.Entity<PickingInfo>()
+                .HasOne(p => p.PickListItem)
+                .WithMany(p => p.PickingInfos)
+                .HasForeignKey(p => p.PickListItemId);
 
 
         }

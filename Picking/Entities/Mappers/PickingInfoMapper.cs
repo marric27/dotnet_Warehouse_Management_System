@@ -19,6 +19,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Mappers
                 BatchNumber = entity.BatchNumber,
                 ExpirationDate = entity.ExpirationDate,
                 Quantity = entity.Quantity
+                //TODO
             };
         }
 
