@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using dotnet_Warehouse_Management_System.GoodsIn;
+using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
 {

@@ -23,18 +23,18 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             return stockUnit?.ToResponseDto();
         }
 
-        public async Task<StockUnitResponseDto> CreateAsync(StockUnitRequestDto stockUnitDto)
+        public async Task<StockUnitResponseDto> CreateAsync(StockUnitRequestDto stockUnitResponseDto)
         {
-            var stockUnit = productDto.ToProduct();
+            var stockUnit = stockUnitResponseDto.ToStockUnit();
             stockUnit.GenerateCode();
 
             var created = await _stockUnitRepository.CreateAsync(stockUnit);
             return created.ToResponseDto();
         }
 
-        public async Task<StockUnitResponseDto?> UpdateAsync(string code, StockUnitRequestDto stockUnitDto)
+        public async Task<StockUnitResponseDto?> UpdateAsync(string code, StockUnitRequestDto stockUnitResponseDto)
         {
-            var updated = await _stockUnitRepository.UpdateAsync(code, productDto);
+            var updated = await _stockUnitRepository.UpdateAsync(code, stockUnitResponseDto);
             return updated?.ToResponseDto();
         }
 
