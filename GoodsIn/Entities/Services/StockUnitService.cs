@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
+using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
-using dotnet_Warehouse_Management_System.Products.Entities.Mappers;
-using dotnet_Warehouse_Management_System.Products.Entities.Repository;
-
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
 {
@@ -23,16 +21,17 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             return stockUnit?.ToResponseDto();
         }
 
-        public async Task<StockUnitResponseDto> CreateAsync(StockUnitRequestDto stockUnitResponseDto)
+        public async Task<StockUnitResponseDto> CreateAsync(StockUnitRequestDto stockUnitRequestDto)
         {
-            var stockUnit = stockUnitResponseDto.ToStockUnit();
+            var stockUnit = stockUnitRequestDto.ToStockUnit();
             stockUnit.GenerateCode();
+            stockUnit.Category = Category.STANDARD;
 
             var created = await _stockUnitRepository.CreateAsync(stockUnit);
             return created.ToResponseDto();
         }
 
-        public async Task<StockUnitResponseDto?> UpdateAsync(string code, StockUnitRequestDto stockUnitResponseDto)
+        public async Task<StockUnitResponseDto> UpdateAsync(string code, StockUnitRequestDto stockUnitRequestDto)
         {
             var updated = await _stockUnitRepository.UpdateAsync(code, stockUnitResponseDto);
             return updated?.ToResponseDto();
@@ -42,6 +41,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         {
             var deleted = await _stockUnitRepository.DeleteAsync(code);
             return deleted?.ToResponseDto();
+        }
+
+        public async Task<StockUnitResponseDto?> GetByIdAsync(long id)
+        {
+            var stockUnit = await _stockUnitRepository.GetById(id);
+            return stockUnit.ToResponseDto();
         }
         
     }
