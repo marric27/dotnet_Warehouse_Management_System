@@ -28,5 +28,19 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<PicklistItem> UpdateAsync(string code, PicklistItemDto item)
+        {
+            var existing = await _context.PicklistItems.FirstOrDefaultAsync(i => i.code == code);
+            if (existing == null)
+            {
+                return null;
+            }
+            existing.State = item.State;
+            existing.ErrorReason = item.ErrorReason;
+            existing.qty = item.Quantity;
+            existing.PickedQty = item.PickedQty;
+            await _context.SaveChangesAsync();
+            return existing;
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
     public class PickingService
     {
         private readonly IPicklistService _picklistService;
+        private readonly IPicklistItemService _picklistItemService;
         private readonly IPickingInfoService _pickingInfoService;
         //private readonly IStockUnitService _stockUnitService;
         //private readonly IStockUnitService _stockUnitService;
@@ -22,6 +23,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
         public Task<PicklistItemDto> GetNextPickListItem(NextItemRequest nextItemRequest) => _picklistService.GetNextPickListItemAsync(nextItemRequest);
 
+<<<<<<< Updated upstream
         //public void ConfirmPicking(ConfirmPickingRequest request)
         //{
         //    // carico i picklist item dati plcode e plitemcode
@@ -37,6 +39,22 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //    }
         //    int toPick = stockUnitQuantities.Values.Sum();
         //    if (toPick > picklistItem.Quantity - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
+=======
+        public async Task ConfirmPickingAsync(ConfirmPickingRequest request)
+        {
+            PicklistItemDto picklistItem = await LoadPickListItem(request.PickListCode, request.PickListItemCode);
+            Dictionary<string, int> stockUnitQuantities = request.stockUnitQuantities
+                .ToDictionary(
+                    x => x.SuId,
+                    x => x.Quantity
+                );
+            if (stockUnitQuantities == null || stockUnitQuantities.Count == 0)
+            {
+                throw new Exception("No stock units provided for picking");
+            }
+            int toPick = stockUnitQuantities.Values.Sum();
+            if(toPick > picklistItem.Quantity - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
+>>>>>>> Stashed changes
 
         //    ErrorReason? errorReason;
         //    if (toPick < picklistItem.PickedQty && request.ErrorReason != null)
@@ -84,13 +102,18 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //    ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
         //    ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
 
+<<<<<<< Updated upstream
         //    UpdatePicklistItem(picklistItem, toPick, errorReason);
         //    UpdatePicklistItem(picklistItem, toPick, errorReason);
+=======
+            UpdatePicklistItem(picklistItem, totalPickedQty, errorReason);
+>>>>>>> Stashed changes
 
 
         //}
         //}
 
+<<<<<<< Updated upstream
         //private void UpdatePicklistItem(PicklistItemDto picklistItem, int toPick, ErrorReason? errorReason)
         //{
         //    throw new NotImplementedException();
@@ -99,6 +122,17 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //{
         //    throw new NotImplementedException();
         //}
+=======
+        private void UpdatePicklistItem(PicklistItemDto picklistItem, int totalPickedQty, ErrorReason? errorReason)
+        {
+            int pickedQty = picklistItem.PickedQty + totalPickedQty;
+            picklistItem.PickedQty = pickedQty;
+            if (pickedQty == picklistItem.Quantity) picklistItem.State = PicklistItemState.PICKED;
+            picklistItem.ErrorReason = errorReason;
+            
+            throw new NotImplementedException();
+        }
+>>>>>>> Stashed changes
 
         //private void ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitDto> stockUnitsByCode, PicklistItemDto picklistItem)
         //{

@@ -89,5 +89,6 @@ namespace dotnet_Warehouse_Management_System.Data
         public DbSet<Picklist> Picklists { get; set; }
         public DbSet<PicklistItem> PicklistItems { get; set; }
         public DbSet<PickingInfo> PickingInfos { get; set; }
-    }
+
+        public DbSet<CheckingInfo> CheckingInfos { get; set; }
 }

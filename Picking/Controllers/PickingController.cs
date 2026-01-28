@@ -27,6 +27,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Controllers
             return Ok(nextItem);
         }
 
+<<<<<<< Updated upstream
         //[HttpPost("confirm")]
         //public async Task<IActionResult> ConfirmPicking([FromBody] ConfirmPickingRequest request)
         //{
@@ -34,6 +35,15 @@ namespace dotnet_Warehouse_Management_System.Picking.Controllers
         //    _pickingService.ConfirmPicking(request);
         //    return Ok("picking confirmed");
         //}
+=======
+        [HttpPost("confirm")]
+        public async Task<IActionResult> ConfirmPicking([FromBody] ConfirmPickingRequest request)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            _pickingService.ConfirmPickingAsync(request);
+            return Ok("picking confirmed");
+        }
+>>>>>>> Stashed changes
 
 
 

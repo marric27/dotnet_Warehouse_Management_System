@@ -74,11 +74,10 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
         public async Task<Product> UpdateAsync(string code, ProductRequestDto productDto)
         {
             var existing = await _context.Products.FirstOrDefaultAsync(p => p.Code == code);
-            if (existing != null)
+            if (existing == null)
             {
                 return null;
             }
-
             existing.Name = productDto.Name;
             existing.Category = productDto.Category;
             await _context.SaveChangesAsync();
