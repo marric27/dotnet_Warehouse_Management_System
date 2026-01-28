@@ -13,6 +13,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         private readonly IPicklistService _picklistService;
         private readonly IPickingInfoService _pickingInfoService;
         //private readonly IStockUnitService _stockUnitService;
+        //private readonly IStockUnitService _stockUnitService;
         public PickingService(IPicklistService picklistService, IPickingInfoService pickingInfoService)
         {
             _picklistService = picklistService;
@@ -35,8 +36,21 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //        throw new Exception("No stock units provided for picking");
         //    }
         //    int toPick = stockUnitQuantities.Values.Sum();
-        //    if(toPick > picklistItem.Quantity - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
+        //    if (toPick > picklistItem.Quantity - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
 
+        //    ErrorReason? errorReason;
+        //    if (toPick < picklistItem.PickedQty && request.ErrorReason != null)
+        //    {
+        //        errorReason = request.ErrorReason.Value;
+        //    }
+        //    else if (toPick == picklistItem.Quantity)
+        //    {
+        //        errorReason = null;
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Error reason cant be omitted when qty to pick is lower than ");
+        //    }
         //    ErrorReason? errorReason;
         //    if (toPick < picklistItem.PickedQty && request.ErrorReason != null)
         //    {
@@ -57,16 +71,30 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //        StockUnitDto stockUnit = StockUnitService.GetByCode(code);
         //        StockUnitsByCode.Add(stockUnit.Code, stockUnit);
         //    }
+        //    Dictionary<string, StockUnitDto> StockUnitsByCode = [];
+        //    foreach (string code in stockUnitQuantities.Keys)
+        //    {
+        //        StockUnitDto stockUnit = StockUnitService.GetByCode(code);
+        //        StockUnitsByCode.Add(stockUnit.Code, stockUnit);
+        //    }
 
+        //    CanPickFromSU(stockUnitQuantities, StockUnitsByCode, picklistItem);
         //    CanPickFromSU(stockUnitQuantities, StockUnitsByCode, picklistItem);
 
         //    ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
+        //    ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
 
+        //    UpdatePicklistItem(picklistItem, toPick, errorReason);
         //    UpdatePicklistItem(picklistItem, toPick, errorReason);
 
 
         //}
+        //}
 
+        //private void UpdatePicklistItem(PicklistItemDto picklistItem, int toPick, ErrorReason? errorReason)
+        //{
+        //    throw new NotImplementedException();
+        //}
         //private void UpdatePicklistItem(PicklistItemDto picklistItem, int toPick, ErrorReason? errorReason)
         //{
         //    throw new NotImplementedException();
@@ -74,7 +102,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
         //private void ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitDto> stockUnitsByCode, PicklistItemDto picklistItem)
         //{
-        //    foreach( var entry in requested)
+        //    foreach (var entry in requested)
         //    {
         //        string code = entry.Key;
         //        int quantityToPick = entry.Value;
@@ -83,9 +111,16 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //        int oldQty = su.Quantity;
         //        su.Quantity = oldQty - quantityToPick;
         //        _stockUnitService.UpdateAsync(su.Id, su);
+        //        StockUnitDto su = stockUnitsByCode[code];
+        //        int oldQty = su.Quantity;
+        //        su.Quantity = oldQty - quantityToPick;
+        //        _stockUnitService.UpdateAsync(su.Id, su);
 
         //        CreatePickingInfo(su, quantityToPick, picklistItem);
+        //        CreatePickingInfo(su, quantityToPick, picklistItem);
 
+        //    }
+        //}
         //    }
         //}
 
@@ -99,14 +134,14 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //        StockUnitCode = su.Code,
         //        BatchNumber = su.BatchNumber,
         //        ExpirationDate = su.ExpirationDate,
-                
+
         //    };
         //    var created = _pickingInfoService.CreateAsync(pickingInfo);
         //}
 
         //private void CanPickFromSU(Dictionary<string, int> requested, Dictionary<string, StockUnitDto> stockUnitsByCode, PicklistItemDto picklistItem)
         //{
-        //    foreach(var entry in requested)
+        //    foreach (var entry in requested)
         //    {
         //        string code = entry.Key;
         //        int quantity = entry.Value;
@@ -138,7 +173,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         //    var picklistDto = await _picklistService.GetByCodeAsync(pickListCode);
         //    var item = picklistDto.pickListItemList.FirstOrDefault(i => i.code == pickListItemCode);
 
-        //    if(item.State != PicklistItemState.OPEN)
+        //    if (item.State != PicklistItemState.OPEN)
         //    {
         //        throw new Exception("PickListItem is not OPEN: " + item.State);
         //    }

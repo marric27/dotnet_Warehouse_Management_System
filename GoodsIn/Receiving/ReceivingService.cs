@@ -32,7 +32,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
             var grn = await _grnService.GetByCodeAsync(grncode);
             if (grn == null)
             {
-                throw new Exception($"Grn {grncode} non existing");
+                throw new KeyNotFoundException($"Grn {grncode} non existing");
             }
             else if (grn.State == State.CLOSED)
             {
