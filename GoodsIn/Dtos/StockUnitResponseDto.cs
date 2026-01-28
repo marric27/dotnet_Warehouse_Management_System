@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
 {
@@ -17,6 +18,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         public int Quantity { get; set; }
         public Category Category { get; set; }
         public ProductResponseDto ProductDto { get; set; }
-        public long SlotId { get; set; }
+        public SlotResponseDto Slot { get; set; }
     }
 }

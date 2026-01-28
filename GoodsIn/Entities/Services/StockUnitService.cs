@@ -33,7 +33,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
 
         public async Task<StockUnitResponseDto> UpdateAsync(string code, StockUnitRequestDto stockUnitRequestDto)
         {
-            var updated = await _stockUnitRepository.UpdateAsync(code, stockUnitResponseDto);
+            var updated = await _stockUnitRepository.UpdateAsync(code, stockUnitRequestDto.ToStockUnit());
             return updated?.ToResponseDto();
         }
 

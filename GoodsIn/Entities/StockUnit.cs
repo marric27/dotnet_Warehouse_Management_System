@@ -24,7 +24,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
 
         public void GenerateCode()
         {
-            Code = $"GRN-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+            Code = $"STK-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
         }
     }
 }

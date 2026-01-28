@@ -19,7 +19,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 
         public async Task<StockUnit> CreateAsync(StockUnit stockUnit)
         {
-            await _context.StockUnit.AddAsync(stockUnit);
+            await _context.StockUnits.AddAsync(stockUnit);
             await _context.SaveChangesAsync();
             return stockUnit;
         }
@@ -31,26 +31,26 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             {
                 return null;
             }
-            _context.StockUnit.Remove(stockUnit);
+            _context.StockUnits.Remove(stockUnit);
             await _context.SaveChangesAsync();
             return stockUnit;
         }
 
         public async Task<StockUnit> GetById(long id)
         {
-            return await _context.StockUnit
+            return await _context.StockUnits
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public async Task<StockUnit?> GetByCodeAsync(string code)
         {
-            return await _context.StockUnit.AsNoTracking().Where(s => s.Code == code).FirstOrDefaultAsync();
+            return await _context.StockUnits.AsNoTracking().Where(s => s.Code == code).FirstOrDefaultAsync();
         }
 
         public async Task<StockUnit> UpdateAsync(string code, StockUnit stockUnit)
         {
-            _context.StockUnit.Update(stockUnit);
+            _context.StockUnits.Update(stockUnit);
             await _context.SaveChangesAsync();
             return stockUnit;
         }

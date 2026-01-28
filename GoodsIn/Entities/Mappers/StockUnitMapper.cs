@@ -1,4 +1,6 @@
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
+using dotnet_Warehouse_Management_System.Products.Entities.Mappers;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
 {
@@ -15,12 +17,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 Code = stockUnit.Code,
                 Quantity = stockUnit.Quantity,
                 Category = stockUnit.Category,
-                Product = stockUnit.Product.ToResponseDto(),
+                ProductDto = stockUnit.Product.ToResponseDto(),
                 Slot = stockUnit.Slot.ToResponseDto()
             };
         }
 
-        public static StockUnit ToStockUnit (StockUnitRequestDto dto)
+        public static StockUnit ToStockUnit (this StockUnitRequestDto dto)
         {
             return new StockUnit
             {
