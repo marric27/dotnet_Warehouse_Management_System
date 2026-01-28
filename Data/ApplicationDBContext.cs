@@ -81,6 +81,8 @@ namespace dotnet_Warehouse_Management_System.Data
         public DbSet<Slot> Slots { get; set; }
         public DbSet<Grn> Grns { get; set; }
         public DbSet<GrnItem> GrnItems { get; set; }
+        public DbSet<StockUnit> StockUnits { get; set; }
+
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; private set; }
         public DbSet<SalesOrderLine> SalesOrderLines { get; set; }
