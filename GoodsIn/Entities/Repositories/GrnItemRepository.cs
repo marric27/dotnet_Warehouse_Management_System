@@ -1,4 +1,5 @@
-﻿using dotnet_Warehouse_Management_System.Common.Helpers;
+﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
@@ -35,13 +36,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 
         public async Task<List<GrnItem>> GetAllAsync(QueryObject query)
         {
-            return await _context.GrnItems.AsNoTracking().AsQueryable()
-                     .ToListAsync();
+            return await _context.GrnItems.AsNoTracking().AsQueryable().ToListAsync();
         }
 
         public async Task<GrnItem?> GetByCodeAsync(string code)
         {
-            return await _context.GrnItems.Include(i => i.CheckingInfoList).AsNoTracking().Where(i => i.Code == code).FirstOrDefaultAsync();
+            return await _context.GrnItems.AsNoTracking().Include(i => i.CheckingInfoList).Where(i => i.Code == code).FirstOrDefaultAsync();
         }
 
         public async Task<GrnItem?> GetById(long id)
@@ -56,6 +56,18 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             _context.GrnItems.Update(item);
             await _context.SaveChangesAsync();
             return item;
+        }
+
+        public async Task<GrnItem?> UpdateStateAsync(string code, State newState)
+        {
+            var entity = await _context.GrnItems.FirstOrDefaultAsync(x => x.Code == code);
+
+            if (entity != null)
+            {
+                entity.State = newState;
+                await _context.SaveChangesAsync();
+            }
+            return entity;
         }
 
     }

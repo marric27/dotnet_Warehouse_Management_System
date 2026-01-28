@@ -9,30 +9,30 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
     {
         public async Task EvaluateAndProgressGrnItemStateAsync(GrnItemResponseDto item)
         {
-            List<CheckingInfoDto> checkingInfos = item.checkingInfoList;
             int received = item.ReceivedQty;
-            int assigned = item.checkingInfoList.Sum(ci => ci.Quantity);
-
+            int assigned = item.checkingInfoList?.Sum(ci => ci.Quantity) ?? 0;
             State current = item.State == null ? State.OPEN : item.State;
 
-            if (assigned >= received && current == State.OPEN)
+
+            // Passaggio a CHECKED
+            if (current == State.OPEN && assigned >= received && received > 0)
             {
                 await grnItemService.UpdateStateAsync(item.Code, State.CHECKED);
                 current = State.CHECKED;
             }
 
-            if (current == State.CHECKED
-                && checkingInfos != null
-                && checkingInfos.Count != 0
-                && checkingInfos.All(c => c.State == State.PUTAWAY))
+            // Passaggio a PUTAWAY (se tutti i figli sono in stato PUTAWAY)
+            if (current == State.CHECKED &&
+                item.checkingInfoList != null &&
+                item.checkingInfoList.Any() &&
+                item.checkingInfoList.All(c => c.State == State.PUTAWAY))
             {
                 await grnItemService.UpdateStateAsync(item.Code, State.PUTAWAY);
-
-                EvaluateAndProgressGrnState(item.GrnId);
+                await EvaluateAndProgressGrnState(item.GrnId);
             }
         }
 
-        public async void EvaluateAndProgressGrnState(long grnId)
+        public async Task EvaluateAndProgressGrnState(long grnId)
         {
             GrnResponseDto grnResponseDto = await grnService.GetByIdAsync(grnId) ?? throw new KeyNotFoundException("Grn not found");
             bool allPutaway = grnResponseDto.Items.All(i => i.State == State.PUTAWAY);

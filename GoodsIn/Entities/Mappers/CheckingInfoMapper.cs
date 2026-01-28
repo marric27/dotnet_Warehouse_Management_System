@@ -15,6 +15,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 ExpirationDate = entity.ExpirationDate,
                 Quantity = entity.Quantity,
                 State = entity.State,
+                StockUnitId = entity.StockUnitId,
             };
         }
 

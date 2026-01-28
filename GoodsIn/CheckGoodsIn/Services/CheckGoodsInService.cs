@@ -12,25 +12,26 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
     {
         public async Task<GrnItemResponseDto> CreateCheckingInfoAndStockUnit(string grnItemCode, StockUnitRequestDto su)
         {
-            GrnItemResponseDto grnItem = await grnItemService.GetByCodeAsync(grnItemCode);
-            if (grnItem.State == Common.State.CHECKED || grnItem.State == Common.State.PUTAWAY) throw new Exception("Cant assign checking info to GrnItem " + grnItemCode + " in Closed or Putaway state");
+            // 1. Recupero dati iniziale
+            var grnItem = await grnItemService.GetByCodeAsync(grnItemCode)
+                          ?? throw new Exception($"GrnItem {grnItemCode} not found");
 
-            if (su.Quantity > grnItem.ReceivedQty) throw new Exception("Requested quantity " + su.Quantity + " exceeds available quantity " + grnItem.ReceivedQty);
+            // 2. Validazioni business
+            if (grnItem.State == State.CHECKED || grnItem.State == State.PUTAWAY)
+                throw new Exception("State is already Closed or Putaway");
 
             var alreadyStockedQty = grnItem.checkingInfoList.Sum(ci => ci.Quantity);
-            var toStockQty = grnItem.ReceivedQty - alreadyStockedQty;
+            if (su.Quantity > (grnItem.ReceivedQty - alreadyStockedQty))
+                throw new Exception("Requested quantity exceeds available quantity");
 
-            if (su.Quantity > toStockQty) throw new Exception("Requested quantity " + su.Quantity + " exceeds available quantity " + toStockQty);
-
-            su.ProductCode = grnItem.ProductCode;
-
+            // 3. Preparazione StockUnit
             var product = await productService.GetByCodeAsync(grnItem.ProductCode);
+            su.ProductCode = grnItem.ProductCode;
             su.Category = product.Category;
 
-            // Create StockUnit
             var stockUnit = await stockUnitService.CreateAsync(su);
 
-            // Create CheckingInfo
+            // 4. Salvataggio CheckingInfo
             var ci = new CheckingInfoDto
             {
                 StockUnitId = stockUnit.Id,
@@ -40,14 +41,13 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
                 BatchNumber = su.BatchNumber,
                 ExpirationDate = su.ExpirationDate
             };
+            await checkingInfoService.CreateAsync(ci);
 
-            var savedCi = await checkingInfoService.CreateAsync(ci);
-
-            // Assign to item
-            //await grnItemService.AddCheckingInfo(grnItemCode, savedCi.Code);
-
-            // Progress state
+            // 5. RE-FETCH FINALE (Cruciale per EF)
+            // Recuperiamo l'item dal DB *dopo* l'inserimento della CheckingInfo.
+            // Assicurati che GetByCodeAsync usi .AsNoTracking() per evitare conflitti di tracking.
             var updatedItem = await grnItemService.GetByCodeAsync(grnItemCode);
+
             await stateService.EvaluateAndProgressGrnItemStateAsync(updatedItem);
 
             return updatedItem;
