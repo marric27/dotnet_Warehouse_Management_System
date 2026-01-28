@@ -9,7 +9,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
         public string Supplier { get; set; }
         public State State { get; set; }
         public DateTime ReceivingDate { get; set; }
-        public List<GrnItem> Items { get; set; } = new List<GrnItem>();
+        public List<GrnItem> Items { get; set; } = [];
 
         public void GenerateCode()
         {

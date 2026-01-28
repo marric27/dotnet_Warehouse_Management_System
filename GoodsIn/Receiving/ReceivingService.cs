@@ -38,12 +38,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
             {
                 throw new Exception($"Grn {grncode} in closed state");
             }
-            var prodToAdd = await _productService.GetByCodeAsync(grnItemRequestDto.ProductCode);
-            if (prodToAdd == null) {
-                throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
-            }
+            var prodToAdd = await _productService.GetByCodeAsync(grnItemRequestDto.ProductCode) ?? throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
 
-            _grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
+            //_grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
             // progressione stati
 
 

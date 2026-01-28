@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dotnet_Warehouse_Management_System.Data;
 
@@ -11,9 +12,11 @@ using dotnet_Warehouse_Management_System.Data;
 namespace dotnet_Warehouse_Management_System.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260128133421_AddCheckingInfo")]
+    partial class AddCheckingInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,7 +85,7 @@ namespace dotnet_Warehouse_Management_System.Migrations
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("GrnItemId")
+                    b.Property<long>("GrnItemId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Quantity")
@@ -206,6 +209,9 @@ namespace dotnet_Warehouse_Management_System.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -213,6 +219,8 @@ namespace dotnet_Warehouse_Management_System.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("SlotId");
 
@@ -459,7 +467,8 @@ namespace dotnet_Warehouse_Management_System.Migrations
                     b.HasOne("dotnet_Warehouse_Management_System.GoodsIn.Entities.GrnItem", "GrnItem")
                         .WithMany("CheckingInfoList")
                         .HasForeignKey("GrnItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("dotnet_Warehouse_Management_System.GoodsIn.Entities.StockUnit", "StockUnit")
                         .WithMany()
@@ -483,9 +492,20 @@ namespace dotnet_Warehouse_Management_System.Migrations
 
             modelBuilder.Entity("dotnet_Warehouse_Management_System.GoodsIn.Entities.StockUnit", b =>
                 {
-                    b.HasOne("dotnet_Warehouse_Management_System.Warehouses.Entities.Slot", null)
+                    b.HasOne("dotnet_Warehouse_Management_System.Products.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("dotnet_Warehouse_Management_System.Warehouses.Entities.Slot", "Slot")
                         .WithMany("StockUnits")
-                        .HasForeignKey("SlotId");
+                        .HasForeignKey("SlotId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Slot");
                 });
 
             modelBuilder.Entity("dotnet_Warehouse_Management_System.Outbound.Entities.PicklistItem", b =>

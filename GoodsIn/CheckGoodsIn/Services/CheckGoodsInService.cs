@@ -1,51 +1,56 @@
-<<<<<<< Updated upstream
-﻿namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
-{
-    public class CheckGoodsInService
-    {
-=======
 ﻿using Azure.Core;
+using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
 {
-    public class CheckGoodsInService(IGrnService grnService, IGrnItemService grnItemService, ICheckingInfoService checkingInfoService, IGrnItemStateService grnItemStateService)
+    public class CheckGoodsInService(IGrnService grnService, IGrnItemService grnItemService, ICheckingInfoService checkingInfoService, IGrnItemStateService stateService, IProductService productService, IStockUnitService stockUnitService)
     {
-        private readonly IGrnItemService _grnItemService = grnItemService;
-        private readonly IGrnService _grnService = grnService;
-        private readonly ICheckingInfoService _checkingInfoService = checkingInfoService;
-        private readonly IGrnItemStateService _grnItemStateService = grnItemStateService;
-
-        public async GrnItemResponseDto CreateCheckingInfoAndStockUnit(string grnItemCode, StockUnitDto su)
+        public async Task<GrnItemResponseDto> CreateCheckingInfoAndStockUnit(string grnItemCode, StockUnitRequestDto su)
         {
-            GrnItemResponseDto grnItem = await _grnItemService.GetByCodeAsync(grnItemCode);
+            GrnItemResponseDto grnItem = await grnItemService.GetByCodeAsync(grnItemCode);
             if (grnItem.State == Common.State.CHECKED || grnItem.State == Common.State.PUTAWAY) throw new Exception("Cant assign checking info to GrnItem " + grnItemCode + " in Closed or Putaway state");
 
             if (su.Quantity > grnItem.ReceivedQty) throw new Exception("Requested quantity " + su.Quantity + " exceeds available quantity " + grnItem.ReceivedQty);
 
-            // setta su
+            var alreadyStockedQty = grnItem.checkingInfoList.Sum(ci => ci.Quantity);
+            var toStockQty = grnItem.ReceivedQty - alreadyStockedQty;
 
-            // crea su
+            if (su.Quantity > toStockQty) throw new Exception("Requested quantity " + su.Quantity + " exceeds available quantity " + toStockQty);
 
-            CheckingInfoDto ci = new()
+            su.ProductCode = grnItem.ProductCode;
+
+            var product = await productService.GetByCodeAsync(grnItem.ProductCode);
+            su.Category = product.Category;
+
+            // Create StockUnit
+            var stockUnit = await stockUnitService.CreateAsync(su);
+
+            // Create CheckingInfo
+            var ci = new CheckingInfoDto
             {
-
+                StockUnitId = stockUnit.Id,
+                GrnItemId = grnItem.Id,
+                State = State.OPEN,
                 Quantity = su.Quantity,
-                State = Common.State.OPEN,
                 BatchNumber = su.BatchNumber,
-                ExpirationDate = su.ExpirationDate,
+                ExpirationDate = su.ExpirationDate
             };
-            var createdCi = _checkingInfoService.CreateAsync(ci);
 
-            // assegna a item
+            var savedCi = await checkingInfoService.CreateAsync(ci);
 
-            // progress state item
-            //_grnItemStateService.EvaluateAndProgressGrnItemState(); // vedi quale item se quello gia in memoria o fare nuovo pull da db
-            //return item;
+            // Assign to item
+            //await grnItemService.AddCheckingInfo(grnItemCode, savedCi.Code);
+
+            // Progress state
+            var updatedItem = await grnItemService.GetByCodeAsync(grnItemCode);
+            await stateService.EvaluateAndProgressGrnItemStateAsync(updatedItem);
+
+            return updatedItem;
         }
->>>>>>> Stashed changes
     }
 }

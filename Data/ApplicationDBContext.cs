@@ -43,7 +43,7 @@ namespace dotnet_Warehouse_Management_System.Data
                 .IsRequired();
 
             modelBuilder.Entity<Picklist>()
-                .HasIndex(o => o.Code) .IsUnique();
+                .HasIndex(o => o.Code).IsUnique();
             modelBuilder.Entity<Picklist>()
                 .HasMany(p => p.PicklistItemList)
                 .WithOne(i => i.Picklist)
@@ -56,14 +56,6 @@ namespace dotnet_Warehouse_Management_System.Data
                 .HasForeignKey(s => s.ProductId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            //modelBuilder.Entity<PicklistItem>()
-            //    .Property(p => p.State)
-            //    .HasConversion<string>();
-
-            //modelBuilder.Entity<PicklistItem>()
-            //    .Property(p => p.ErrorReason)
-            //    .HasConversion<string>();
-
             modelBuilder.Entity<PicklistItem>()
                 .HasMany(p => p.PickingInfos)
                 .WithOne(pi => pi.PickListItem)
@@ -74,6 +66,32 @@ namespace dotnet_Warehouse_Management_System.Data
                 .WithMany(p => p.PickingInfos)
                 .HasForeignKey(p => p.PickListItemId);
 
+            modelBuilder.Entity<GrnItem>()
+                .HasMany(c => c.CheckingInfoList)
+                .WithOne(ci => ci.GrnItem)
+                .HasForeignKey(ci => ci.GrnItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            //modelBuilder.Entity<Slot>()
+            //    .HasMany(s => s.StockUnits)
+            //    .WithOne(su => su.Slot)
+            //    .HasForeignKey(s => s.SlotId)
+            //    .OnDelete(DeleteBehavior.SetNull);
+            //modelBuilder.Entity<StockUnit>()
+            //    .HasOne(su => su.Slot)
+            //    .WithMany(s => s.StockUnits)
+            //    .HasForeignKey(s => s.SlotId)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
+
+            modelBuilder.Entity<CheckingInfo>()
+                .HasOne(ci => ci.StockUnit)
+                .WithMany()
+                .HasForeignKey(ci => ci.StockUnitId)
+                .IsRequired();
+
+
 
         }
 
@@ -82,13 +100,12 @@ namespace dotnet_Warehouse_Management_System.Data
         public DbSet<Grn> Grns { get; set; }
         public DbSet<GrnItem> GrnItems { get; set; }
         public DbSet<StockUnit> StockUnits { get; set; }
-
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; private set; }
         public DbSet<SalesOrderLine> SalesOrderLines { get; set; }
         public DbSet<Picklist> Picklists { get; set; }
         public DbSet<PicklistItem> PicklistItems { get; set; }
         public DbSet<PickingInfo> PickingInfos { get; set; }
-
         public DbSet<CheckingInfo> CheckingInfos { get; set; }
+    }
 }

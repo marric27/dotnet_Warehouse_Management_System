@@ -9,6 +9,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         public DateTime ExpirationDate { get; set; }
         public int Quantity { get; set; }
         public State State { get; set; }
+        public long StockUnitId { get; set; }
+        public long GrnItemId { get; set; }
 
     }
 }

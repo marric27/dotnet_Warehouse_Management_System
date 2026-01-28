@@ -5,18 +5,17 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
 {
     public static class CheckingInfoMapper
     {
-        public static CheckingInfoDto ToResponseDto(this CheckingInfo entitiy)
+        public static CheckingInfoDto ToResponseDto(this CheckingInfo entity)
         {
+            if (entity == null) return null;
             return new CheckingInfoDto
             {
-                Code = entitiy.Code,
-                BatchNumber = entitiy.BatchNumber,
-                ExpirationDate = entitiy.ExpirationDate,
-                Quantity = entitiy.Quantity,
-                State = entitiy.State,
-    };
-
-
+                Code = entity.Code,
+                BatchNumber = entity.BatchNumber,
+                ExpirationDate = entity.ExpirationDate,
+                Quantity = entity.Quantity,
+                State = entity.State,
+            };
         }
 
         public static CheckingInfo ToEntity(this CheckingInfoDto dto)
@@ -28,6 +27,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 ExpirationDate = dto.ExpirationDate,
                 Quantity = dto.Quantity,
                 State = dto.State,
+                StockUnitId = dto.StockUnitId,
+                GrnItemId = dto.GrnItemId
             };
         }
     }

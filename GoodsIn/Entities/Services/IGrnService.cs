@@ -14,5 +14,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
         Task<GrnResponseDto?> GetByIdAsync(long id);
         Task<Page<GrnResponseDto>> GetAllAsync(QueryObject query);
         Task<GrnResponseDto> UpdateAsync(string code, GrnRequestDto grnRequestDto);
+        Task<GrnResponseDto> UpdateStateAsync(string code, State state);
     }
 }

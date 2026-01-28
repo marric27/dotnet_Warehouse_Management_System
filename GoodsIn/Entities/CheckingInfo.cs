@@ -11,7 +11,11 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
         public int Quantity { get; set; }
         public State State { get; set; }
 
-        // relazioni con grnitem e stockunit
+        public long? GrnItemId { get; set; }
+        public GrnItem? GrnItem { get; set; }
+        public long StockUnitId { get; set; }
+        public StockUnit StockUnit { get; set; }
+
 
         public void GenerateCode()
         {

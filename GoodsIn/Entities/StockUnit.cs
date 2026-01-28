@@ -18,8 +18,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
         public string Code { get; set; }
         public int Quantity { get; set; }
         public Category Category { get; set; }
-        public Product Product { get; set; }
-        public Slot Slot { get; set; }
+        //public long? SlotId { get; set; }
+        //public Slot? Slot { get; set; }
 
 
         public void GenerateCode()

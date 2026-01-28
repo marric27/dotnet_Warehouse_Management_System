@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
 {
@@ -13,5 +14,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         public int NotCompliantQty { get; set; }
         public State State { get; set; }
         public string Notes { get; set; }
+        public List<CheckingInfoDto> checkingInfoList { get; set; } = new();
+        public long GrnId { get; set; }
     }
 }

@@ -2,7 +2,9 @@ using dotnet_Warehouse_Management_System.Customers.Entities.Repository;
 using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn;
+using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
@@ -70,9 +72,16 @@ builder.Services.AddScoped<PicklistGenService>();
 builder.Services.AddScoped<IPicklistService, PicklistService>();
 builder.Services.AddScoped<IPicklistRepository, PicklistRepository>();
 builder.Services.AddScoped<IPicklistItemRepository, PicklistItemRepository>();
+builder.Services.AddScoped<IPicklistItemService, PicklistItemService>();
 builder.Services.AddScoped<IPickingInfoRepository, PickingInfoRepository>();
 builder.Services.AddScoped<IPickingInfoService, PickingInfoService>();
 builder.Services.AddScoped<PickingService>();
+builder.Services.AddScoped<IStockUnitService, StockUnitService>();
+builder.Services.AddScoped<IStockUnitRepository, StockUnitRepository>();
+builder.Services.AddScoped<ICheckingInfoRepository, CheckingInfoRepository>();
+builder.Services.AddScoped<ICheckingInfoService, CheckingInfoService>();
+builder.Services.AddScoped<CheckGoodsInService>();
+
 
 var app = builder.Build();
 

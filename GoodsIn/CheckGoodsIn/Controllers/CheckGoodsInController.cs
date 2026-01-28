@@ -1,6 +1,20 @@
-﻿namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Controllers
+﻿using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
+using Microsoft.AspNetCore.Mvc;
+
+namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Controllers
 {
-    public class CheckGoodsInController
+    [ApiController]
+    [Route("api/v1/check-goods-in")]
+    public class CheckGoodsInController(CheckGoodsInService checkGoodsInService) : ControllerBase
     {
+        [HttpPost("{grnItemCode}/checking-info")]
+        public async Task<ActionResult<GrnItemResponseDto>> CreateCheckingInfo([FromRoute] string grnItemCode, [FromBody] StockUnitRequestDto request)
+        {
+            GrnItemResponseDto result = await checkGoodsInService.CreateCheckingInfoAndStockUnit(grnItemCode, request);
+
+            return Ok(result);
+        }
+
     }
 }

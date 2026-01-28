@@ -8,7 +8,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         Task<GrnItem?> GetById(long id);
         Task<GrnItem?> GetByCodeAsync(string code);
         Task<GrnItem> CreateAsync(GrnItem item);
-        Task<GrnItem> UpdateAsync(string code, GrnItem item);
+        Task<GrnItem> UpdateAsync(GrnItem item);
         Task<GrnItem?> DeleteAsync(string code);
     }
 }

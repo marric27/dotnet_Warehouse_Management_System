@@ -72,7 +72,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 
         public async Task<Grn?> GetByCodeAsync(string code)
         {
-            return await _context.Grns.Include(g => g.Items).AsNoTracking().Where(g => g.Code == code).FirstOrDefaultAsync();
+            return await _context.Grns.Include(g => g.Items).ThenInclude(i => i.CheckingInfoList).AsNoTracking().Where(g => g.Code == code).FirstOrDefaultAsync();
         }
 
         public async Task<Grn?> GetById(long id)

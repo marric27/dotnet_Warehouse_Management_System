@@ -4,16 +4,13 @@ using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
+using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
 {
-    public class StockUnitService : IStockUnitService
+    public class StockUnitService(IStockUnitRepository stockUnitRepository, IProductRepository productRepository) : IStockUnitService
     {
-        private readonly IStockUnitRepository _stockUnitRepository;
-        public StockUnitService(IStockUnitRepository stockUnitRepository)
-        {
-            _stockUnitRepository = stockUnitRepository;
-        }
+        private readonly IStockUnitRepository _stockUnitRepository = stockUnitRepository;
 
         public async Task<StockUnitResponseDto?> GetByCodeAsync(string code)
         {
@@ -25,7 +22,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         {
             var stockUnit = stockUnitRequestDto.ToStockUnit();
             stockUnit.GenerateCode();
-            stockUnit.Category = Category.STANDARD;
+            var product = await productRepository.GetByCodeAsync(stockUnitRequestDto.ProductCode);
 
             var created = await _stockUnitRepository.CreateAsync(stockUnit);
             return created.ToResponseDto();

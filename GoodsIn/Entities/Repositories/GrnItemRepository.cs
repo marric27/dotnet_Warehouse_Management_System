@@ -41,7 +41,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 
         public async Task<GrnItem?> GetByCodeAsync(string code)
         {
-            return await _context.GrnItems.AsNoTracking().Where(i => i.Code == code).FirstOrDefaultAsync();
+            return await _context.GrnItems.Include(i => i.CheckingInfoList).AsNoTracking().Where(i => i.Code == code).FirstOrDefaultAsync();
         }
 
         public async Task<GrnItem?> GetById(long id)
@@ -51,7 +51,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<GrnItem> UpdateAsync(string code, GrnItem item)
+        public async Task<GrnItem> UpdateAsync(GrnItem item)
         {
             _context.GrnItems.Update(item);
             await _context.SaveChangesAsync();

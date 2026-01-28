@@ -17,8 +17,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 Code = stockUnit.Code,
                 Quantity = stockUnit.Quantity,
                 Category = stockUnit.Category,
-                ProductDto = stockUnit.Product.ToResponseDto(),
-                Slot = stockUnit.Slot.ToResponseDto()
+                //Slot = stockUnit.Slot.ToResponseDto()
             };
         }
 
@@ -28,7 +27,10 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
             {
                 BatchNumber = dto.BatchNumber,
                 ExpirationDate = dto.ExpirationDate,
-                Quantity = dto.Quantity
+                Quantity = dto.Quantity,
+                Category = dto.Category,
+                ProductCode = dto.ProductCode,
+
             };
 
         }

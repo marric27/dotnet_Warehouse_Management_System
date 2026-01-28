@@ -16,7 +16,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 CompliantQty = item.CompliantQty,
                 NotCompliantQty = item.NotCompliantQty,
                 State = item.State,
-                Notes = item.Notes
+                Notes = item.Notes,
+                checkingInfoList = item.CheckingInfoList?.Select(ci => ci.ToResponseDto()).ToList()
             };
         }
 

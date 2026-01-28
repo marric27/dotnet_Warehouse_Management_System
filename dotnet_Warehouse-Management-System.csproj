@@ -17,12 +17,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
   </ItemGroup>
 
-<<<<<<< Updated upstream
-=======
-  <ItemGroup>
-    <Folder Include="GoodsIn\CheckGoodsIn\Controller\" />
-    <Folder Include="GoodsIn\Putaway\Controllers\" />
-  </ItemGroup>
->>>>>>> Stashed changes
+
 
 </Project>
