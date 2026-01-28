@@ -7,7 +7,7 @@ using dotnet_Warehouse_Management_System.Warehouses.Entities;
 using dotnet_Warehouse_Management_System.Common;
 
 
-namespace dotnet_Warehouse_Management_System.GoodsIn
+namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
 {
     public class StockUnit
     {

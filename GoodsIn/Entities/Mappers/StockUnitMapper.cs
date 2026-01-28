@@ -15,8 +15,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
                 Code = stockUnit.Code,
                 Quantity = stockUnit.Quantity,
                 Category = stockUnit.Category,
-                Product = stockUnit.Product,
-                Slot = stockUnit.Slot
+                Product = stockUnit.Product.ToResponseDto(),
+                Slot = stockUnit.Slot.ToResponseDto()
             };
         }
 
