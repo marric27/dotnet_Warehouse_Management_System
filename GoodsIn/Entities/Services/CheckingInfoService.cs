@@ -74,10 +74,5 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             return existingCi.ToResponseDto();
         }
 
-        public async Task<CheckingInfoDto> UpdateStateAsync(CheckingInfoDto checkinginfo)
-        {
-            var updated = await checkingInfoRepository.UpdateStateAsync(checkinginfo.ToEntity());
-            return updated.ToResponseDto();
-        }
     }
 }

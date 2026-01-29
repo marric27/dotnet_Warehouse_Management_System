@@ -12,6 +12,5 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         Task<bool> DeleteAsync(long id);
         Task<bool> DeleteAsync(string code);
         Task<CheckingInfoDto> GetByStockUnitIdAsync(long stockUnitId);
-        Task<CheckingInfoDto> UpdateStateAsync(CheckingInfoDto checkingInfo);
     }
 }

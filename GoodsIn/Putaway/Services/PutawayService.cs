@@ -26,7 +26,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services
             // Update checkingInfo state
             var ci = await checkingInfoService.GetByStockUnitIdAsync(su.Id) ?? throw new KeyNotFoundException("CheckingInfo not found");
             ci.State = State.PUTAWAY;
-            await checkingInfoService.UpdateStateAsync(ci);
+            await checkingInfoService.UpdateAsync(ci);
 
             // Recupero Item e valutazione stato
             var item = await grnItemService.GetByIdAsync(ci.GrnItemId);
