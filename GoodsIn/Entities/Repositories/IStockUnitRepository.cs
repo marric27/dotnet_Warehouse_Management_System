@@ -9,11 +9,11 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 {
     public interface IStockUnitRepository
     {
-        Task<StockUnit> GetById(long id);
-        Task<StockUnit?> GetByCodeAsync(string code);
+        Task<StockUnit> GetByIdAsync(long id, bool track);
+        Task<StockUnit?> GetByCodeAsync(string code, bool track);
         Task<StockUnit> CreateAsync(StockUnit stockUnit);
-        Task<StockUnit> UpdateAsync(StockUnit stockUnit);
-        Task<StockUnit?> DeleteAsync(string code);
+        Task UpdateAsync();
+        Task DeleteAsync(StockUnit stockUnit);
         Task<List<StockUnit>> GetAllAsync();
         Task<List<StockUnit>> GetByCodesAsync(List<string> codes);
     }

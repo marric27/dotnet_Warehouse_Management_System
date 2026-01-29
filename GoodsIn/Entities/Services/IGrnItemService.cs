@@ -15,9 +15,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
         Task<List<GrnItemResponseDto>> GetAllAsync(QueryObject query);
 
-        Task<GrnItemResponseDto> DeleteAsync(string code);
+        Task<bool> DeleteAsync(string code);
 
-        Task<GrnItemResponseDto> UpdateAsync(string code, GrnItemRequestDto grnItemRequestDto);
+        Task<GrnItemResponseDto> UpdateAsync(string code, GrnItemResponseDto grnItemResponseDto);
         Task<GrnItemResponseDto> UpdateStateAsync(string code, State state);
 
         Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grnCode, GrnItemRequestDto grnItemDto);

@@ -9,7 +9,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
     public interface IStockUnitService
     {
         Task<StockUnitResponseDto> CreateAsync(StockUnitRequestDto stockUnitRequestDto);
-        Task<StockUnitResponseDto> DeleteAsync(string code);
+        Task<bool> DeleteAsync(string code);
         Task<StockUnitResponseDto?> GetByCodeAsync(string code);
         Task<StockUnitResponseDto?> GetByIdAsync(long id);
         Task<StockUnitResponseDto?> UpdateAsync(StockUnitResponseDto stockUnitResponseDto);

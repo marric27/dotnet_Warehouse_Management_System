@@ -8,9 +8,9 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
     {
         Task<Page<Product>> GetAllPaginatedAsync(QueryObject query);
         Task<List<Product>> GetAllAsync();
-        Task<Product?> GetByCodeAsync(string code);
+        Task<Product?> GetByCodeAsync(string code, bool track);
         Task<Product> CreateAsync(Product product);
         Task UpdateAsync();
-        Task DeleteAsync(string code);
+        Task DeleteAsync(Product product);
     }
 }

@@ -2,13 +2,12 @@
 {
     public interface ICheckingInfoRepository
     {
-        Task<List<CheckingInfo>> GetAll();
-        Task<CheckingInfo?> GetById(long id);
-        Task<CheckingInfo?> GetByCode(string code);
-        Task<CheckingInfo> Create(CheckingInfo entity);
-        Task<CheckingInfo> Update(CheckingInfo entity);
-        Task<CheckingInfo> Delete(long id);
-        Task<CheckingInfo> Delete(string code);
+        Task<List<CheckingInfo>> GetAllAsync();
+        Task<CheckingInfo?> GetByIdAsync(long id, bool track);
+        Task<CheckingInfo?> GetByCodeAsync(string code, bool track);
+        Task<CheckingInfo> CreateAsync(CheckingInfo entity);
+        Task UpdateAsync();
+        Task DeleteAsync(CheckingInfo entity);
         Task<CheckingInfo?> GetByStockUnitIdAsync(long stockUnitId);
         Task<CheckingInfo> UpdateStateAsync(CheckingInfo checkingInfo);
     }

@@ -22,7 +22,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 
         public async Task<ProductResponseDto?> GetByCodeAsync(string code)
         {
-            var product = await productRepository.GetByCodeAsync(code);
+            var product = await productRepository.GetByCodeAsync(code, false);
             return product?.ToResponseDto();
         }
 
@@ -37,17 +37,19 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 
         public async Task<ProductResponseDto?> UpdateAsync(string code, ProductRequestDto productDto)
         {
-            var existingProduct = await productRepository.GetByCodeAsync(code);
+            var existingProduct = await productRepository.GetByCodeAsync(code, true) ?? throw new KeyNotFoundException();
+            existingProduct.Name = productDto.Name;
+            existingProduct.Category = productDto.Category;
             await productRepository.UpdateAsync();
             return existingProduct.ToResponseDto();
         }
 
         public async Task<bool> DeleteAsync(string code)
         {
-            var product = await productRepository.GetByCodeAsync(code);
+            var product = await productRepository.GetByCodeAsync(code, true);
             if (product == null) return false;
 
-            await productRepository.DeleteAsync(code);
+            await productRepository.DeleteAsync(product);
             return true;
         }
     }

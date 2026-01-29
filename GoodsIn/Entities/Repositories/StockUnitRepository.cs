@@ -9,60 +9,45 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 {
-    public class StockUnitRepository : IStockUnitRepository
+    public class StockUnitRepository(ApplicationDBContext context) : IStockUnitRepository
     {
-        private readonly ApplicationDBContext _context;
-        public StockUnitRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
-
         public async Task<StockUnit> CreateAsync(StockUnit stockUnit)
         {
-            await _context.StockUnits.AddAsync(stockUnit);
-            await _context.SaveChangesAsync();
+            await context.StockUnits.AddAsync(stockUnit);
+            await context.SaveChangesAsync();
             return stockUnit;
         }
 
-        public async Task<StockUnit?> DeleteAsync(string code)
+        public async Task DeleteAsync(StockUnit stockUnit)
         {
-            var stockUnit = await GetByCodeAsync(code);
-            if (stockUnit == null)
-            {
-                return null;
-            }
-            _context.StockUnits.Remove(stockUnit);
-            await _context.SaveChangesAsync();
-            return stockUnit;
+            context.StockUnits.Remove(stockUnit);
+            await context.SaveChangesAsync();
         }
 
-        public async Task<StockUnit> GetById(long id)
+        public async Task<StockUnit> GetByIdAsync(long id, bool track = false)
         {
-            return await _context.StockUnits
-                .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var query = context.StockUnits.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public async Task<StockUnit?> GetByCodeAsync(string code)
+        public async Task<StockUnit?> GetByCodeAsync(string code, bool track = false)
         {
-            return await _context.StockUnits.AsNoTracking().Where(s => s.Code == code).FirstOrDefaultAsync();
+            var query = context.StockUnits.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(s => s.Code == code);
         }
 
-        public async Task<StockUnit> UpdateAsync(StockUnit stockUnit)
-        {
-            _context.StockUnits.Update(stockUnit);
-            await _context.SaveChangesAsync();
-            return stockUnit;
-        }
+        public async Task UpdateAsync() => await context.SaveChangesAsync();
 
         public Task<List<StockUnit>> GetAllAsync()
         {
-            return _context.StockUnits.AsNoTracking().ToListAsync();
+            return context.StockUnits.AsNoTracking().ToListAsync();
         }
 
         public async Task<List<StockUnit>> GetByCodesAsync(List<string> codes)
         {
-            return await _context.StockUnits
+            return await context.StockUnits
                 .Where(su => codes.Contains(su.Code))
                 .ToListAsync();
         }

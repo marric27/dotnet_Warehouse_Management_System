@@ -7,11 +7,11 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
     public interface IGrnRepository
     {
         Task<Page<Grn>> GetAllAsync(QueryObject query);
-        Task<Grn?> GetById(long id);
-        Task<Grn?> GetByCodeAsync(string code);
+        Task<Grn?> GetById(long id, bool track);
+        Task<Grn?> GetByCodeAsync(string code, bool track);
         Task<Grn> CreateAsync(Grn grn);
-        Task<Grn> UpdateAsync(string code, Grn grn);
+        Task UpdateAsync();
         Task<Grn> UpdateStateAsync(string code, State newState);
-        Task<Grn?> DeleteAsync(string code);
+        Task DeleteAsync(Grn grn);
     }
 }

@@ -59,16 +59,17 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
             return product;
         }
 
-        public async Task<Product?> GetByCodeAsync(string code)
+        public async Task<Product?> GetByCodeAsync(string code, bool track = false)
         {
-            return await context.Products.AsNoTracking().AsQueryable().FirstOrDefaultAsync(p => p.Code == code);
+            var query = context.Products.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+            return await query.FirstOrDefaultAsync(p => p.Code == code);
         }
 
         public async Task UpdateAsync() => await context.SaveChangesAsync();
 
-        public async Task DeleteAsync(string code)
+        public async Task DeleteAsync(Product product)
         {
-            var product = await GetByCodeAsync(code);
             context.Products.Remove(product);
             await context.SaveChangesAsync();
         }

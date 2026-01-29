@@ -5,30 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
 {
-    public class GrnRepository : IGrnRepository
+    public class GrnRepository(ApplicationDBContext context) : IGrnRepository
     {
-        private readonly ApplicationDBContext _context;
-        public GrnRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
         public async Task<Grn> CreateAsync(Grn grn)
         {
-            await _context.Grns.AddAsync(grn);
-            await _context.SaveChangesAsync();
+            await context.Grns.AddAsync(grn);
+            await context.SaveChangesAsync();
             return grn;
         }
 
-        public async Task<Grn?> DeleteAsync(string code)
+        public async Task DeleteAsync(Grn grn)
         {
-            var grn = await GetByCodeAsync(code);
-            if (grn == null)
-            {
-                return null;
-            }
-            _context.Grns.Remove(grn);
-            await _context.SaveChangesAsync();
-            return grn;
+            context.Grns.Remove(grn);
+            await context.SaveChangesAsync();
         }
 
         public async Task<Page<Grn>> GetAllAsync(QueryObject query)
@@ -36,7 +25,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             int pageNumber = Math.Max(0, query.PageNumber);
             int pageSize = Math.Clamp(query.PageSize, 1, 100);
 
-            var grnsQuery = _context.Grns.AsNoTracking().AsQueryable();
+            var grnsQuery = context.Grns.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Code))
             {
@@ -70,30 +59,27 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             };
         }
 
-        public async Task<Grn?> GetByCodeAsync(string code)
+        public async Task<Grn?> GetByCodeAsync(string code, bool track)
         {
-            return await _context.Grns.Include(g => g.Items).ThenInclude(i => i.CheckingInfoList).AsNoTracking().Where(g => g.Code == code).FirstOrDefaultAsync();
+            var query = context.Grns.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+            return await query.Include(x => x.Items).FirstOrDefaultAsync(p => p.Code == code);
         }
 
-        public async Task<Grn?> GetById(long id)
+        public async Task<Grn?> GetById(long id, bool track)
         {
-            return await _context.Grns
-                .Include(g => g.Items).ThenInclude(i => i.CheckingInfoList)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.Id == id);
+            var query = context.Grns.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+            return await query.Include(x => x.Items).FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<Grn> UpdateAsync(string code, Grn grn)
-        {
-            _context.Grns.Update(grn);
-            await _context.SaveChangesAsync();
-            return grn;
-        }
+        public async Task UpdateAsync() => await context.SaveChangesAsync();
+
         public async Task<Grn> UpdateStateAsync(string code, State newState)
         {
-            var grn = await _context.Grns.FirstOrDefaultAsync(g => g.Code == code);
+            var grn = await context.Grns.FirstOrDefaultAsync(g => g.Code == code);
             grn.State = newState;
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return grn;
         }
 

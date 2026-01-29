@@ -9,8 +9,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         Task<CheckingInfoDto> GetByCode(string code);
         Task<CheckingInfoDto> GetById(long id);
         Task<CheckingInfoDto> UpdateAsync(CheckingInfoDto checkingInfo);
-        Task<CheckingInfoDto> DeleteAsync(long id);
-        Task<CheckingInfoDto> DeleteAsync(string code);
+        Task<bool> DeleteAsync(long id);
+        Task<bool> DeleteAsync(string code);
         Task<CheckingInfoDto> GetByStockUnitIdAsync(long stockUnitId);
         Task<CheckingInfoDto> UpdateStateAsync(CheckingInfoDto checkingInfo);
     }

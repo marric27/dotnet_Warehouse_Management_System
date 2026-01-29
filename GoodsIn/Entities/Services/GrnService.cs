@@ -4,48 +4,40 @@ using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
+using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 {
-    public class GrnService : IGrnService
+    public class GrnService(IGrnRepository grnRepository, IGrnItemService grnItemService) : IGrnService
     {
-        private readonly IGrnRepository _grnRepository;
-        private readonly IGrnItemService _grnItemService;
-
-        public GrnService(IGrnRepository grnRepository, IGrnItemService grnItemService)
-        {
-            _grnRepository = grnRepository;
-            _grnItemService = grnItemService;
-        }
-
         public async Task<GrnResponseDto> CreateAsync(GrnRequestDto grnRequestDto)
         {
             var grn = grnRequestDto.ToGrn();
             grn.GenerateCode();
             grn.State = State.OPEN;
 
-            var createdGrn = await _grnRepository.CreateAsync(grn);
+            var createdGrn = await grnRepository.CreateAsync(grn);
 
             return createdGrn.ToResponseDto();
         }
 
         public async Task<bool> DeleteAsync(string code)
         {
-            var grn = await _grnRepository.DeleteAsync(code);
+            var grn = await grnRepository.GetByCodeAsync(code, true);
 
             if (grn == null)
             {
                 return false;
             }
-
+            await grnRepository.DeleteAsync(grn);
             return true;
         }
 
         public async Task<GrnResponseDto?> GetByCodeAsync(string code)
         {
-            var grn = await _grnRepository.GetByCodeAsync(code);
+            var grn = await grnRepository.GetByCodeAsync(code, false);
 
             if (grn == null)
             {
@@ -57,7 +49,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
         public async Task<Page<GrnResponseDto>> GetAllAsync(QueryObject query)
         {
-            var pagedGrns = await _grnRepository.GetAllAsync(query);
+            var pagedGrns = await grnRepository.GetAllAsync(query);
 
             var pagedDto = new Page<GrnResponseDto>
             {
@@ -70,24 +62,23 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             return pagedDto;
         }
 
-        public async Task<GrnResponseDto> UpdateAsync(string code, GrnRequestDto grnRequestDto)
+        public async Task<GrnResponseDto> UpdateAsync(string code, GrnResponseDto grnDto)
         {
-            var updated = await _grnRepository.UpdateAsync(code, grnRequestDto.ToGrn());
-            if (updated == null)
-                throw new KeyNotFoundException($"GRN {code} non trovata");
-
-            return updated.ToResponseDto();
+            var existingGrn = await grnRepository.GetByCodeAsync(code, true) ?? throw new KeyNotFoundException();
+            existingGrn.State = grnDto.State;
+            await grnRepository.UpdateAsync();
+            return existingGrn.ToResponseDto();
         }
 
         public async Task<GrnResponseDto?> GetByIdAsync(long id)
         {
-            var grn = await _grnRepository.GetById(id);
+            var grn = await grnRepository.GetById(id, false);
             return grn.ToResponseDto();
         }
 
         public async Task<GrnResponseDto> UpdateStateAsync(string code, State state)
         {
-            var updated = await _grnRepository.UpdateStateAsync(code, state);
+            var updated = await grnRepository.UpdateStateAsync(code, state);
 
             return updated.ToResponseDto();
         }
