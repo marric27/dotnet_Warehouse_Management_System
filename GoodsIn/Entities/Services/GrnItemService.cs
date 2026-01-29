@@ -43,9 +43,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             return true;
         }
 
-        public async Task<GrnItemResponseDto> UpdateAsync(string code, GrnItemResponseDto grnItemResponseDto)
+        public async Task<GrnItemResponseDto> UpdateAsync(GrnItemResponseDto grnItemResponseDto)
         {
-            var existingItem = await grnItemRepository.GetByCodeAsync(code, true);
+            var existingItem = await grnItemRepository.GetByCodeAsync(grnItemResponseDto.Code, true);
             existingItem.State = grnItemResponseDto.State;
             await grnItemRepository.UpdateAsync();
             return existingItem.ToResponseDto();
@@ -67,11 +67,5 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             await grnItemRepository.UpdateAsync();
         }
 
-        public async Task<GrnItemResponseDto> UpdateStateAsync(string code, State state)
-        {
-            var updated = await grnItemRepository.UpdateStateAsync(code, state);
-
-            return updated.ToResponseDto();
-        }
     }
 }

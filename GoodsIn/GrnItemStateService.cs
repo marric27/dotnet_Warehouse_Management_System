@@ -18,7 +18,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
             // Passaggio a CHECKED
             if (current == State.OPEN && assigned >= received && received > 0)
             {
-                await grnItemService.UpdateStateAsync(item.Code, State.CHECKED);
+                item.State = State.CHECKED;
+                await grnItemService.UpdateAsync(item);
                 current = State.CHECKED;
             }
 
@@ -28,7 +29,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
                 item.CheckingInfoList.Any() &&
                 item.CheckingInfoList.All(c => c.State == State.PUTAWAY))
             {
-                await grnItemService.UpdateStateAsync(item.Code, State.PUTAWAY);
+                item.State = State.PUTAWAY;
+                await grnItemService.UpdateAsync(item);
                 await EvaluateAndProgressGrnStateAsync(item.GrnId);
             }
         }
@@ -41,7 +43,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
 
             if (allPutaway)
             {
-                await grnService.UpdateStateAsync(grn.Code, State.CLOSED);
+                grn.State = State.CLOSED;
+                await grnService.UpdateAsync(grn);
             }
         }
 

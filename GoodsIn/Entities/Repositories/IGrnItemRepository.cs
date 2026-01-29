@@ -11,6 +11,5 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         Task<GrnItem> CreateAsync(GrnItem item);
         Task UpdateAsync();
         Task DeleteAsync(GrnItem item);
-        Task<GrnItem?> UpdateStateAsync(string code, State newState);
     }
 }

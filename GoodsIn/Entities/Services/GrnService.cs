@@ -61,10 +61,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
             return pagedDto;
         }
-
-        public async Task<GrnResponseDto> UpdateAsync(string code, GrnResponseDto grnDto)
+        public async Task<GrnResponseDto> UpdateAsync(GrnResponseDto grnDto)
         {
-            var existingGrn = await grnRepository.GetByCodeAsync(code, true) ?? throw new KeyNotFoundException();
+            var existingGrn = await grnRepository.GetByCodeAsync(grnDto.Code, true) ?? throw new KeyNotFoundException();
             existingGrn.State = grnDto.State;
             await grnRepository.UpdateAsync();
             return existingGrn.ToResponseDto();
@@ -74,13 +73,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
         {
             var grn = await grnRepository.GetById(id, false);
             return grn.ToResponseDto();
-        }
-
-        public async Task<GrnResponseDto> UpdateStateAsync(string code, State state)
-        {
-            var updated = await grnRepository.UpdateStateAsync(code, state);
-
-            return updated.ToResponseDto();
         }
     }
 }

@@ -43,18 +43,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         }
 
         public async Task UpdateAsync() => await context.SaveChangesAsync();
-        
-        public async Task<GrnItem?> UpdateStateAsync(string code, State newState)
-        {
-            var entity = await context.GrnItems.FirstOrDefaultAsync(x => x.Code == code);
-
-            if (entity != null)
-            {
-                entity.State = newState;
-                await context.SaveChangesAsync();
-            }
-            return entity;
-        }
 
     }
 }
