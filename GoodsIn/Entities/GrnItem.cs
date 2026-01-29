@@ -18,7 +18,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities
         public Grn Grn { get; set; }
 
 
-        public List<CheckingInfo>? CheckingInfoList = [];
+        public List<CheckingInfo>? CheckingInfoList { get; set; } = [];
 
         public void GenerateCode()
         {

@@ -10,12 +10,14 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
             if (entity == null) return null;
             return new CheckingInfoDto
             {
+                Id = entity.Id,
                 Code = entity.Code,
                 BatchNumber = entity.BatchNumber,
                 ExpirationDate = entity.ExpirationDate,
                 Quantity = entity.Quantity,
                 State = entity.State,
                 StockUnitId = entity.StockUnitId,
+                GrnItemId = entity.GrnItemId
             };
         }
 
@@ -23,6 +25,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
         {
             return new CheckingInfo
             {
+                Id = dto.Id,
                 Code = dto.Code,
                 BatchNumber = dto.BatchNumber,
                 ExpirationDate = dto.ExpirationDate,

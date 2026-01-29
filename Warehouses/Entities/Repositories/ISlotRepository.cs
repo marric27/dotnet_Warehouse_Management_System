@@ -12,5 +12,6 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
         Task<Slot> UpdateAsync(string code, SlotRequestDto slotDto);
         Task<Slot?> DeleteAsync(string code);
         Task<Slot?> GetSlotContainingProduct(string productCode);
+        Task<List<Slot?>> GetAllAsync();
     }
 }

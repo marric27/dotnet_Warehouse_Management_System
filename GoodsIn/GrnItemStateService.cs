@@ -2,6 +2,7 @@
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using Microsoft.Extensions.Logging;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn
 {
@@ -10,7 +11,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
         public async Task EvaluateAndProgressGrnItemStateAsync(GrnItemResponseDto item)
         {
             int received = item.ReceivedQty;
-            int assigned = item.checkingInfoList?.Sum(ci => ci.Quantity) ?? 0;
+            int assigned = item.CheckingInfoList?.Sum(ci => ci.Quantity) ?? 0;
             State current = item.State == null ? State.OPEN : item.State;
 
 
@@ -23,23 +24,24 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
 
             // Passaggio a PUTAWAY (se tutti i figli sono in stato PUTAWAY)
             if (current == State.CHECKED &&
-                item.checkingInfoList != null &&
-                item.checkingInfoList.Any() &&
-                item.checkingInfoList.All(c => c.State == State.PUTAWAY))
+                item.CheckingInfoList != null &&
+                item.CheckingInfoList.Any() &&
+                item.CheckingInfoList.All(c => c.State == State.PUTAWAY))
             {
                 await grnItemService.UpdateStateAsync(item.Code, State.PUTAWAY);
-                await EvaluateAndProgressGrnState(item.GrnId);
+                await EvaluateAndProgressGrnStateAsync(item.GrnId);
             }
         }
 
-        public async Task EvaluateAndProgressGrnState(long grnId)
+        public async Task EvaluateAndProgressGrnStateAsync(long grnId)
         {
-            GrnResponseDto grnResponseDto = await grnService.GetByIdAsync(grnId) ?? throw new KeyNotFoundException("Grn not found");
-            bool allPutaway = grnResponseDto.Items.All(i => i.State == State.PUTAWAY);
+            var grn = await grnService.GetByIdAsync(grnId) ?? throw new KeyNotFoundException("GRN not found");
+
+            bool allPutaway = grn.Items.All(i => i.State == State.PUTAWAY);
 
             if (allPutaway)
             {
-                _ = grnService.UpdateStateAsync(grnResponseDto.Code, State.CLOSED);
+                await grnService.UpdateStateAsync(grn.Code, State.CLOSED);
             }
         }
 

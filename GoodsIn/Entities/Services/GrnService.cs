@@ -87,9 +87,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
         public async Task<GrnResponseDto> UpdateStateAsync(string code, State state)
         {
-            var updated = await _grnRepository.GetByCodeAsync(code) ?? throw new KeyNotFoundException($"GRN {code} non trovata");
-            updated.State = state;
-            await _grnRepository.UpdateAsync(code, updated);
+            var updated = await _grnRepository.UpdateStateAsync(code, state);
 
             return updated.ToResponseDto();
         }

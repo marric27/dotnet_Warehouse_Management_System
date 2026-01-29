@@ -8,6 +8,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
     public interface ISlotService
     {
         Task<Page<SlotResponseDto>> GetAllAsync(QueryObject query);
+        Task<List<SlotResponseDto>> GetAllAsync();
         Task<SlotResponseDto?> GetByCodeAsync(string code);
         Task<SlotResponseDto> CreateAsync(SlotRequestDto slotDto);
         Task<SlotResponseDto?> UpdateAsync(string code, SlotRequestDto slotDto);

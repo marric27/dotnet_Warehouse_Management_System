@@ -27,6 +27,11 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
             };
             return pagedDto;
         }
+        public async Task<List<SlotResponseDto>> GetAllAsync()
+        {
+            var slots = await _slotRepository.GetAllAsync();
+            return slots.Select(p => p.ToResponseDto()).ToList();
+        }
 
         public async Task<SlotResponseDto?> GetByCodeAsync(string code)
         {

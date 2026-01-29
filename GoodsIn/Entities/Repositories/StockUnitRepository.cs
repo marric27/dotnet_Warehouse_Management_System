@@ -48,11 +48,16 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             return await _context.StockUnits.AsNoTracking().Where(s => s.Code == code).FirstOrDefaultAsync();
         }
 
-        public async Task<StockUnit> UpdateAsync(string code, StockUnit stockUnit)
+        public async Task<StockUnit> UpdateAsync(StockUnit stockUnit)
         {
             _context.StockUnits.Update(stockUnit);
             await _context.SaveChangesAsync();
             return stockUnit;
+        }
+
+        public Task<List<StockUnit>> GetAllAsync()
+        {
+            return _context.StockUnits.AsNoTracking().ToListAsync();
         }
     }
 }

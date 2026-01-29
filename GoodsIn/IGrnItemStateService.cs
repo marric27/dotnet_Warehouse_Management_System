@@ -6,6 +6,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
     {
         public void ValidateItemQuantities(GrnItemRequestDto grnItem);
         public Task EvaluateAndProgressGrnItemStateAsync(GrnItemResponseDto grnItem);
-        public Task EvaluateAndProgressGrnState(long grnId);
+        public Task EvaluateAndProgressGrnStateAsync(long grnId);
     }
 }

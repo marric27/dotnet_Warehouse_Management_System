@@ -18,6 +18,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         public int Quantity { get; set; }
         public Category Category { get; set; }
         public ProductResponseDto ProductDto { get; set; }
-        public SlotResponseDto Slot { get; set; }
+        public long? SlotId { get; set; }
     }
 }

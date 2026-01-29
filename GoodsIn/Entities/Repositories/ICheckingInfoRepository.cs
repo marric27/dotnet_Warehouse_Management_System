@@ -9,7 +9,7 @@
         Task<CheckingInfo> Update(CheckingInfo entity);
         Task<CheckingInfo> Delete(long id);
         Task<CheckingInfo> Delete(string code);
-
-
+        Task<CheckingInfo?> GetByStockUnitIdAsync(long stockUnitId);
+        Task<CheckingInfo> UpdateStateAsync(CheckingInfo checkingInfo);
     }
 }

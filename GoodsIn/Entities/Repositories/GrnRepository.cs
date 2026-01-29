@@ -78,7 +78,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         public async Task<Grn?> GetById(long id)
         {
             return await _context.Grns
-                .Include(g => g.Items)
+                .Include(g => g.Items).ThenInclude(i => i.CheckingInfoList)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
@@ -86,6 +86,13 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         public async Task<Grn> UpdateAsync(string code, Grn grn)
         {
             _context.Grns.Update(grn);
+            await _context.SaveChangesAsync();
+            return grn;
+        }
+        public async Task<Grn> UpdateStateAsync(string code, State newState)
+        {
+            var grn = await _context.Grns.FirstOrDefaultAsync(g => g.Code == code);
+            grn.State = newState;
             await _context.SaveChangesAsync();
             return grn;
         }

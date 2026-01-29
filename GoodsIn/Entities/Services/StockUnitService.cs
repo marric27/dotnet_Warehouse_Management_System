@@ -5,10 +5,11 @@ using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
 {
-    public class StockUnitService(IStockUnitRepository stockUnitRepository, IProductRepository productRepository) : IStockUnitService
+    public class StockUnitService(IStockUnitRepository stockUnitRepository, IProductRepository productRepository, ISlotRepository slotRepository) : IStockUnitService
     {
         private readonly IStockUnitRepository _stockUnitRepository = stockUnitRepository;
 
@@ -30,7 +31,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
 
         public async Task<StockUnitResponseDto> UpdateAsync(string code, StockUnitRequestDto stockUnitRequestDto)
         {
-            var updated = await _stockUnitRepository.UpdateAsync(code, stockUnitRequestDto.ToStockUnit());
+            var updated = await _stockUnitRepository.UpdateAsync(stockUnitRequestDto.ToStockUnit());
             return updated?.ToResponseDto();
         }
 
@@ -45,6 +46,31 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             var stockUnit = await _stockUnitRepository.GetById(id);
             return stockUnit.ToResponseDto();
         }
-        
+
+        public async Task<StockUnitResponseDto?> AssingToSlotAsync(string suCode, string slotCode)
+        {
+            // 1. Recupero delle entità tramite i codici (usando i tuoi metodi del repo)
+            var stockUnit = await _stockUnitRepository.GetByCodeAsync(suCode)
+                            ?? throw new KeyNotFoundException($"StockUnit {suCode} not found");
+
+            var slot = await slotRepository.GetByCodeAsync(slotCode)
+                       ?? throw new KeyNotFoundException($"Slot {slotCode} not found");
+
+            // 2. Eseguiamo l'assegnazione fisica dell'ID dello slot sulla StockUnit
+            stockUnit.SlotId = slot.Id;
+
+            // 3. Chiamata al repo per il salvataggio
+            // Passiamo l'entità modificata al repository
+            var su = await _stockUnitRepository.UpdateAsync(stockUnit);
+
+            // 4. Mappatura verso il DTO di risposta
+            return su.ToResponseDto();
+        }
+
+        public async Task<List<StockUnitResponseDto>> GetAllAsync()
+        {
+            var stockunits = await _stockUnitRepository.GetAllAsync();
+            return stockunits.Select(su => su.ToResponseDto()).ToList();
+        }
     }
 }

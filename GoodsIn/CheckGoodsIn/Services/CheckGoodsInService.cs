@@ -1,7 +1,5 @@
-﻿using Azure.Core;
-using dotnet_Warehouse_Management_System.Common;
+﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
@@ -20,7 +18,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
             if (grnItem.State == State.CHECKED || grnItem.State == State.PUTAWAY)
                 throw new Exception("State is already Closed or Putaway");
 
-            var alreadyStockedQty = grnItem.checkingInfoList.Sum(ci => ci.Quantity);
+            var alreadyStockedQty = grnItem.CheckingInfoList.Sum(ci => ci.Quantity);
             if (su.Quantity > (grnItem.ReceivedQty - alreadyStockedQty))
                 throw new Exception("Requested quantity exceeds available quantity");
 
@@ -51,6 +49,11 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
             await stateService.EvaluateAndProgressGrnItemStateAsync(updatedItem);
 
             return updatedItem;
+        }
+
+        public async Task<List<StockUnitResponseDto>> ListStockUnit()
+        {
+            return await stockUnitService.GetAllAsync();
         }
     }
 }

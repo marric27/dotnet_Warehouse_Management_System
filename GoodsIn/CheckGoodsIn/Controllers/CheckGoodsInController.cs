@@ -16,5 +16,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Controllers
             return Ok(result);
         }
 
+        [HttpGet("stock-units")]
+        public async Task<IActionResult> ListStockUnits()
+        {
+            var su = await checkGoodsInService.ListStockUnit();
+            return Ok(su);
+        }
+
     }
 }

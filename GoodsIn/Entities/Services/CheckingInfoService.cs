@@ -58,12 +58,24 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             return ci.ToResponseDto();
         }
 
+        public async Task<CheckingInfoDto> GetByStockUnitIdAsync(long stockUnitId)
+        {
+            var ci = await _checkingInfoRepository.GetByStockUnitIdAsync(stockUnitId);
+            return ci.ToResponseDto();
+        }
+
         public async Task<CheckingInfoDto> UpdateAsync(CheckingInfoDto checkingInfo)
         {
             var updated = await _checkingInfoRepository.Update(checkingInfo.ToEntity());
             if (updated == null)
                 throw new KeyNotFoundException($"GRN {checkingInfo.Code} non trovata");
 
+            return updated.ToResponseDto();
+        }
+
+        public async Task<CheckingInfoDto> UpdateStateAsync(CheckingInfoDto checkinginfo)
+        {
+            var updated = await _checkingInfoRepository.UpdateStateAsync(checkinginfo.ToEntity());
             return updated.ToResponseDto();
         }
     }

@@ -57,9 +57,24 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
             return await _context.CheckingInfos.AsNoTracking().Where(i => i.Id == id).FirstOrDefaultAsync();
         }
 
+        public async Task<CheckingInfo?> GetByStockUnitIdAsync(long stockUnitId)
+        {
+            return await _context.CheckingInfos.FirstOrDefaultAsync(ci => ci.StockUnitId == stockUnitId);
+        }
+
         public async Task<CheckingInfo> Update(CheckingInfo entity)
         {
             _context.CheckingInfos.Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+        public async Task<CheckingInfo> UpdateStateAsync(CheckingInfo checkingInfo)
+        {
+            var entity = await _context.CheckingInfos.FindAsync(checkingInfo.Id)
+                         ?? throw new KeyNotFoundException("CheckingInfo not found");
+
+            entity.State = checkingInfo.State;
+
             await _context.SaveChangesAsync();
             return entity;
         }

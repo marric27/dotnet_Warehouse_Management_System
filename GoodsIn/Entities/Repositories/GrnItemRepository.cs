@@ -47,7 +47,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         public async Task<GrnItem?> GetById(long id)
         {
             return await _context.GrnItems
-                .AsNoTracking()
+                .AsNoTracking().Include(i => i.CheckingInfoList)
                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 

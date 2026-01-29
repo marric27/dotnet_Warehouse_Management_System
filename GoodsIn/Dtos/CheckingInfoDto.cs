@@ -4,6 +4,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
 {
     public class CheckingInfoDto
     {
+        public long Id { get; set; }
         public string Code { get; set; }
         public string BatchNumber { get; set; }
         public DateTime ExpirationDate { get; set; }

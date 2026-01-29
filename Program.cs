@@ -5,6 +5,7 @@ using dotnet_Warehouse_Management_System.GoodsIn;
 using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
@@ -81,6 +82,7 @@ builder.Services.AddScoped<IStockUnitRepository, StockUnitRepository>();
 builder.Services.AddScoped<ICheckingInfoRepository, CheckingInfoRepository>();
 builder.Services.AddScoped<ICheckingInfoService, CheckingInfoService>();
 builder.Services.AddScoped<CheckGoodsInService>();
+builder.Services.AddScoped<PutawayService>();
 
 
 var app = builder.Build();

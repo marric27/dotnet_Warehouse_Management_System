@@ -70,6 +70,12 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
                 TotalElements = totalItems
             };
         }
+        public async Task<List<Slot>> GetAllAsync()
+        {
+            var slots = await _context.Slots.AsNoTracking().ToListAsync();
+            return slots;
+  
+        }
 
         public async Task<Slot?> GetByCodeAsync(string code)
         {
