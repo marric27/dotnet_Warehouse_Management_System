@@ -12,9 +12,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         Task<StockUnitResponseDto> DeleteAsync(string code);
         Task<StockUnitResponseDto?> GetByCodeAsync(string code);
         Task<StockUnitResponseDto?> GetByIdAsync(long id);
-        Task<StockUnitResponseDto?> UpdateAsync(string code, StockUnitRequestDto stockUnitRequestDto);
+        Task<StockUnitResponseDto?> UpdateAsync(StockUnitResponseDto stockUnitResponseDto);
         Task<StockUnitResponseDto?> AssingToSlotAsync(string suCode, string slotCode);
         Task<List<StockUnitResponseDto>> GetAllAsync();
-
+        Task<List<StockUnitResponseDto>> GetByCodesAsync(List<string> codes);
     }
 }

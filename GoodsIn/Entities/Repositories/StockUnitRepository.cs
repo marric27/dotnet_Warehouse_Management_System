@@ -59,5 +59,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         {
             return _context.StockUnits.AsNoTracking().ToListAsync();
         }
+
+        public async Task<List<StockUnit>> GetByCodesAsync(List<string> codes)
+        {
+            return await _context.StockUnits
+                .Where(su => codes.Contains(su.Code))
+                .ToListAsync();
+        }
     }
 }

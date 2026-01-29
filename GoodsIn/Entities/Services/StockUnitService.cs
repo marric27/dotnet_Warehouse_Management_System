@@ -29,9 +29,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             return created.ToResponseDto();
         }
 
-        public async Task<StockUnitResponseDto> UpdateAsync(string code, StockUnitRequestDto stockUnitRequestDto)
+        public async Task<StockUnitResponseDto> UpdateAsync(StockUnitResponseDto stockUnitResponseDto)
         {
-            var updated = await _stockUnitRepository.UpdateAsync(stockUnitRequestDto.ToStockUnit());
+            var updated = await _stockUnitRepository.UpdateAsync(stockUnitResponseDto.ToStockUnit());
             return updated?.ToResponseDto();
         }
 
@@ -72,5 +72,15 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
             var stockunits = await _stockUnitRepository.GetAllAsync();
             return stockunits.Select(su => su.ToResponseDto()).ToList();
         }
+
+        public async Task<List<StockUnitResponseDto>> GetByCodesAsync(List<string> codes)
+        {
+            var stockUnits = await _stockUnitRepository.GetByCodesAsync(codes);
+
+            return stockUnits
+                .Select(su => su.ToResponseDto())
+                .ToList();
+        }
+
     }
 }

@@ -15,5 +15,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories
         Task<StockUnit> UpdateAsync(StockUnit stockUnit);
         Task<StockUnit?> DeleteAsync(string code);
         Task<List<StockUnit>> GetAllAsync();
+        Task<List<StockUnit>> GetByCodesAsync(List<string> codes);
     }
 }

@@ -7,20 +7,14 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
 {
     [ApiController]
     [Route("api/v1/products")]
-    public class ProductController : ControllerBase
+    public class ProductController(IProductService productService) : ControllerBase
     {
-        private readonly IProductService _productService;
-        public ProductController(IProductService productService)
-        {
-            _productService = productService;
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var products = await _productService.GetAllPaginatedAsync(query);
+            var products = await productService.GetAllPaginatedAsync(query);
             return Ok(products);
         }
 
@@ -28,17 +22,15 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var products = await _productService.GetAllAsync();
+            var products = await productService.GetAllAsync();
             return Ok(products);
         }
 
         [HttpGet("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productService.GetByCodeAsync(code);
+            var prod = await productService.GetByCodeAsync(code);
             if (prod == null)
             {
                 return NotFound();
@@ -49,16 +41,14 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProductRequestDto product)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productService.CreateAsync(product);
+            var prod = await productService.CreateAsync(product);
             return CreatedAtAction(nameof(GetByCode), new { code = prod.Code }, prod);
         }
 
         [HttpPut("bycode/{code}")]
         public async Task<IActionResult> UpdateByCode([FromRoute] string code, [FromBody] ProductRequestDto dto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productService.UpdateAsync(code, dto);
+            var prod = await productService.UpdateAsync(code, dto);
 
             if (prod == null)
             {
@@ -71,8 +61,7 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [HttpDelete("bycode/{code}")]
         public async Task<IActionResult> DeleteByCode([FromRoute] string code)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-            var prod = await _productService.DeleteAsync(code);
+            var prod = await productService.DeleteAsync(code);
 
             if (prod == null)
             {

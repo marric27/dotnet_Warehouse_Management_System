@@ -34,5 +34,17 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers
             };
 
         }
+
+        public static StockUnit ToStockUnit(this StockUnitResponseDto dto)
+        {
+            return new StockUnit
+            {
+                BatchNumber = dto.BatchNumber,
+                ExpirationDate = dto.ExpirationDate,
+                Quantity = dto.Quantity,
+                Category = dto.Category,
+                ProductCode = dto.ProductCode,
+            };
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
 
         public async Task<List<Picklist>> GetAllAsync()
         {
-            return await _context.Picklists.AsNoTracking().ToListAsync();
+            return await _context.Picklists.AsNoTracking().Include(p => p.PicklistItemList).ToListAsync();
         }
 
         public async Task<Page<Picklist>> GetAllPaginatedAsync(QueryObject query)
@@ -64,8 +64,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
 
         public async Task<Picklist?> GetByCodeAsync(string code)
         {
-            return await _context.Picklists.Include(p => p.PicklistItemList).AsNoTracking()
-                .Where(p => p.Code == code).FirstOrDefaultAsync();
+            return await _context.Picklists
+                .Include(p => p.PicklistItemList)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Code == code);
         }
     }
 }
