@@ -11,6 +11,6 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
         Task<ProductResponseDto?> GetByCodeAsync(string code);
         Task<ProductResponseDto> CreateAsync(ProductRequestDto productDto);
         Task<ProductResponseDto?> UpdateAsync(string code, ProductRequestDto productDto);
-        Task<ProductResponseDto?> DeleteAsync(string code);
+        Task<bool> DeleteAsync(string code);
     }
 }

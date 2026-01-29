@@ -6,29 +6,23 @@ using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 
 namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 {
-    public class ProductService : IProductService
+    public class ProductService(IProductRepository productRepository) : IProductService
     {
-        private readonly IProductRepository _productRepository;
-
-        public ProductService(IProductRepository productRepository)
-        {
-            _productRepository = productRepository;
-        }
         public async Task<List<ProductResponseDto>> GetAllAsync()
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await productRepository.GetAllAsync();
             return products.Select(p => p.ToResponseDto()).ToList();
         }
 
         public async Task<Page<ProductResponseDto>> GetAllPaginatedAsync(QueryObject query)
         {
-            var products = await _productRepository.GetAllPaginatedAsync(query);
+            var products = await productRepository.GetAllPaginatedAsync(query);
             return products.Map(p => p.ToResponseDto());
         }
 
         public async Task<ProductResponseDto?> GetByCodeAsync(string code)
         {
-            var product = await _productRepository.GetByCodeAsync(code);
+            var product = await productRepository.GetByCodeAsync(code);
             return product?.ToResponseDto();
         }
 
@@ -37,20 +31,24 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
             var product = productDto.ToProduct();
             product.GenerateCode();
 
-            var created = await _productRepository.CreateAsync(product);
+            var created = await productRepository.CreateAsync(product);
             return created.ToResponseDto();
         }
 
         public async Task<ProductResponseDto?> UpdateAsync(string code, ProductRequestDto productDto)
         {
-            var updated = await _productRepository.UpdateAsync(code, productDto);
-            return updated?.ToResponseDto();
+            var existingProduct = await productRepository.GetByCodeAsync(code);
+            await productRepository.UpdateAsync();
+            return existingProduct.ToResponseDto();
         }
 
-        public async Task<ProductResponseDto?> DeleteAsync(string code)
+        public async Task<bool> DeleteAsync(string code)
         {
-            var deleted = await _productRepository.DeleteAsync(code);
-            return deleted?.ToResponseDto();
+            var product = await productRepository.GetByCodeAsync(code);
+            if (product == null) return false;
+
+            await productRepository.DeleteAsync(code);
+            return true;
         }
     }
 }

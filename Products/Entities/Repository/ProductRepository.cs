@@ -7,20 +7,14 @@ using System;
 
 namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository(ApplicationDBContext context) : IProductRepository
     {
-        private readonly ApplicationDBContext _context;
-        public ProductRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
-
         public async Task<Page<Product>> GetAllPaginatedAsync(QueryObject query)
         {
             int pageNumber = Math.Max(0, query.PageNumber);
             int pageSize = Math.Clamp(query.PageSize, 1, 100);
 
-            var prods = _context.Products.AsNoTracking().AsQueryable();
+            var prods = context.Products.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Code))
             {
@@ -55,45 +49,28 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
 
         public async Task<List<Product>> GetAllAsync()
         {
-            return await _context.Products.AsNoTracking().ToListAsync();
-        }
-
-        public async Task<Product?> GetByCodeAsync(string code)
-        {
-            return await _context.Products.AsNoTracking()
-                .Where(p => p.Code == code).FirstOrDefaultAsync();
+            return await context.Products.AsNoTracking().ToListAsync();
         }
 
         public async Task<Product> CreateAsync(Product product)
         {
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
+            await context.Products.AddAsync(product);
+            await context.SaveChangesAsync();
             return product;
         }
 
-        public async Task<Product> UpdateAsync(string code, ProductRequestDto productDto)
+        public async Task<Product?> GetByCodeAsync(string code)
         {
-            var existing = await _context.Products.FirstOrDefaultAsync(p => p.Code == code);
-            if (existing == null)
-            {
-                return null;
-            }
-            existing.Name = productDto.Name;
-            existing.Category = productDto.Category;
-            await _context.SaveChangesAsync();
-            return existing;
-
+            return await context.Products.AsNoTracking().AsQueryable().FirstOrDefaultAsync(p => p.Code == code);
         }
-        public async Task<Product?> DeleteAsync(string code)
+
+        public async Task UpdateAsync() => await context.SaveChangesAsync();
+
+        public async Task DeleteAsync(string code)
         {
-            var prod = await _context.Products.FirstOrDefaultAsync(x => x.Code == code);
-            if (prod != null)
-            {
-                return null;
-            }
-            _context.Products.Remove(prod);
-            await _context.SaveChangesAsync();
-            return prod;
+            var product = await GetByCodeAsync(code);
+            context.Products.Remove(product);
+            await context.SaveChangesAsync();
         }
     }
 }

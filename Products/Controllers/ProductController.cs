@@ -30,12 +30,8 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [HttpGet("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
-            var prod = await productService.GetByCodeAsync(code);
-            if (prod == null)
-            {
-                return NotFound();
-            }
-            return Ok(prod);
+            var result = await productService.GetByCodeAsync(code);
+            return result == null ? NotFound() : Ok(result);
         }
 
         [HttpPost]
@@ -48,27 +44,15 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [HttpPut("bycode/{code}")]
         public async Task<IActionResult> UpdateByCode([FromRoute] string code, [FromBody] ProductRequestDto dto)
         {
-            var prod = await productService.UpdateAsync(code, dto);
-
-            if (prod == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(prod);
+            var result = await productService.UpdateAsync(code, dto);
+            return result == null ? NotFound() : Ok(result);
         }
 
         [HttpDelete("bycode/{code}")]
         public async Task<IActionResult> DeleteByCode([FromRoute] string code)
         {
-            var prod = await productService.DeleteAsync(code);
-
-            if (prod == null)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            var success = await productService.DeleteAsync(code);
+            return success ? NoContent() : NotFound();
         }
 
 

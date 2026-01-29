@@ -10,7 +10,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
         Task<List<Product>> GetAllAsync();
         Task<Product?> GetByCodeAsync(string code);
         Task<Product> CreateAsync(Product product);
-        Task<Product> UpdateAsync(string code, ProductRequestDto productDto);
-        Task<Product?> DeleteAsync(string code);
+        Task UpdateAsync();
+        Task DeleteAsync(string code);
     }
 }
