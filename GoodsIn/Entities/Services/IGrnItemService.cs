@@ -19,8 +19,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
         Task<GrnItemResponseDto> UpdateAsync(string code, GrnItemResponseDto grnItemResponseDto);
         Task<GrnItemResponseDto> UpdateStateAsync(string code, State state);
-
-        Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grnCode, GrnItemRequestDto grnItemDto);
         Task AddCheckingInfo(string grnItemCode, string checkingInfoCode);
     }
 }
