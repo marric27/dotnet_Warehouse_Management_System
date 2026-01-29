@@ -6,30 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
 {
-    public class SlotRepository : ISlotRepository
+    public class SlotRepository(ApplicationDBContext context) : ISlotRepository
     {
-        private readonly ApplicationDBContext _context;
-        public SlotRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
         public async Task<Slot> CreateAsync(Slot slot)
         {
-            await _context.Slots.AddAsync(slot);
-            await _context.SaveChangesAsync();
+            await context.Slots.AddAsync(slot);
+            await context.SaveChangesAsync();
             return slot;
         }
 
-        public async Task<Slot?> DeleteAsync(string code)
+        public async Task DeleteAsync(string code)
         {
-            var slot = await _context.Slots.FirstOrDefaultAsync(x => x.Code == code);
-            if (slot == null)
-            {
-                return null;
-            }
-            _context.Slots.Remove(slot);
-            await _context.SaveChangesAsync();
-            return slot;
+            var slot = await GetByCodeAsync(code);
+            context.Slots.Remove(slot);
+            await context.SaveChangesAsync();
 
         }
 
@@ -38,7 +28,7 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
             int pageNumber = Math.Max(0, query.PageNumber);
             int pageSize = Math.Clamp(query.PageSize, 1, 100);
 
-            var slots = _context.Slots.AsNoTracking().AsQueryable();
+            var slots = context.Slots.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Code))
             {
@@ -72,24 +62,20 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
         }
         public async Task<List<Slot>> GetAllAsync()
         {
-            var slots = await _context.Slots.AsNoTracking().ToListAsync();
-            return slots;
-  
+            return await context.Slots.AsNoTracking().ToListAsync();
         }
 
         public async Task<Slot?> GetByCodeAsync(string code)
         {
-            return await _context.Slots.AsNoTracking().Where(s => s.Code == code).FirstOrDefaultAsync();
+            return await context.Slots.AsNoTracking().AsQueryable().FirstOrDefaultAsync(s => s.Code == code);
         }
 
         public async Task<Slot?> GetSlotContainingProduct(string productCode)
         {
-            return await _context.Slots.AsNoTracking().Where(s => s.Product.Code == productCode).FirstOrDefaultAsync();
+            return await context.Slots.AsNoTracking().Where(s => s.Product.Code == productCode).FirstOrDefaultAsync();
         }
 
-        public Task<Slot> UpdateAsync(string code, SlotRequestDto productDto)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task UpdateAsync() => await context.SaveChangesAsync();
+
     }
 }

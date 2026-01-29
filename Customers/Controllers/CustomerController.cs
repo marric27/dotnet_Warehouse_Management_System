@@ -19,7 +19,7 @@ namespace dotnet_Warehouse_Management_System.Customers.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
 
             var customers = await _customerService.GetAllPaginatedAsync(query);
             return Ok(customers);
@@ -29,7 +29,7 @@ namespace dotnet_Warehouse_Management_System.Customers.Controllers
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
 
             var customers = await _customerService.GetAllAsync();
             return Ok(customers);
@@ -38,7 +38,7 @@ namespace dotnet_Warehouse_Management_System.Customers.Controllers
         [HttpGet("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var cust = await _customerService.GetByCodeAsync(code);
             if (cust == null)
             {
@@ -50,7 +50,7 @@ namespace dotnet_Warehouse_Management_System.Customers.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CustomerRequestDto customer)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var cust = await _customerService.CreateAsync(customer);
             return CreatedAtAction(nameof(GetByCode), new { code = cust.Code }, cust);
         }

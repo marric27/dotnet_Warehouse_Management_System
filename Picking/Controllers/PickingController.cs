@@ -18,7 +18,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Controllers
         [HttpPost("next-item")]
         public async Task<IActionResult> GetNextPicklistItem([FromBody] NextItemRequest request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             PicklistItemDto nextItem = await _pickingService.GetNextPickListItem(request);
             if (nextItem == null)
             {

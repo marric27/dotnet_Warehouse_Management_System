@@ -23,7 +23,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
         [Route("release")]
         public async Task<IActionResult> GeneratePicklist([FromBody] List<long> ids)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var picklists = await _picklistGenService.GeneratePicklists(ids);
             return Created("", picklists);
         }
@@ -32,7 +32,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
         [Route("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var picklist = await _picklistService.GetByCodeAsync(code);
             if(picklist == null) return NotFound();
             return Ok(picklist);
@@ -41,7 +41,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
         [HttpGet("release-paged")]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var pl = await _picklistService.GetAllPaginatedAsync(query);
             return Ok(pl);
         }
@@ -49,7 +49,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
         [HttpGet("release")]
         public async Task<IActionResult> GetAll()
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var pl = await _picklistService.GetAllAsync();
             return Ok(pl);
         }

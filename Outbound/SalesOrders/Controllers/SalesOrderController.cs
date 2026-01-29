@@ -20,7 +20,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Controllers
         [Route("create-order")]
         public async Task<IActionResult> Create([FromBody] OrderRequestDto orderDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var order = await _salesOrderService.CreateOrderAndAssign(orderDto.CustomerCode, orderDto);
             return CreatedAtAction(nameof(GetByCode), new { code = order.code }, order);
         }
@@ -28,7 +28,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Controllers
         [HttpGet("orders/code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var ord = await _salesOrderService.GetByCodeAsync(code);
             if (ord == null)
             {
@@ -40,7 +40,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Controllers
         [HttpGet("orders-paged")]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var ord = await _salesOrderService.GetAllPaginated(query);
             return Ok(ord);
         }
@@ -48,7 +48,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Controllers
         [HttpGet("orders")]
         public async Task<IActionResult> GetAll()
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             var ord = await _salesOrderService.GetAll();
             return Ok(ord);
         }

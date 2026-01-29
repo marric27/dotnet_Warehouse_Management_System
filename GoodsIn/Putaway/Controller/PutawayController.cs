@@ -12,7 +12,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Controller
         [HttpPost("{stockUnitCode}/assignToSlot/{slotCode}")]
         public async Task<IActionResult> AssignStockUnitToSlot([FromRoute] string stockUnitCode, [FromRoute] string slotCode)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+
 
             var Slotdto = await putawayService.AssignStockUnitToSlotAsync(stockUnitCode, slotCode);
 
