@@ -1,6 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Outbound.Dtos;
 using dotnet_Warehouse_Management_System.Outbound.Entities;
-using dotnet_Warehouse_Management_System.Outbound.Entities.Mappers;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
@@ -40,6 +39,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                         ProductCode = productCode,
                         State = Common.PicklistItemState.OPEN,
                         Qty = line.quantity,
+                        PickedQty = 0,
                         PickingSequence = slot.PickingSequence,
                         SlotCode = slot.Code,
                         SalesOrderCode = order.code,

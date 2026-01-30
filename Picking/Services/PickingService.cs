@@ -45,7 +45,6 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
                 }
                 else
                 {
-                    // Questo è il punto dove lanciavi l'eccezione
                     throw new Exception($"Error reason is required when total picked qty ({totalAfterPicking}) is lower than requested qty ({picklistItem.Qty})");
                 }
             }

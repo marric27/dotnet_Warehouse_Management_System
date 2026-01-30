@@ -16,14 +16,12 @@ namespace dotnet_Warehouse_Management_System.Picking.Controllers
             return nextItem == null ? NotFound() : Ok(nextItem);
         }
 
-
         [HttpPost("confirm")]
         public async Task<IActionResult> ConfirmPicking([FromBody] ConfirmPickingRequest request)
         {
             await pickingService.ConfirmPickingAsync(request);
             return Ok(new { message = "picking confirmed" });
         }
-
 
     }
 }
