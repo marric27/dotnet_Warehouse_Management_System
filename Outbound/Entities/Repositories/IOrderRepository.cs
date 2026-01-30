@@ -8,11 +8,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
     {
         Task<List<Order>> GetAllAsync();
         Task<Page<Order>> GetAllPaginatedAsync(QueryObject query);
-        Task<Order?> GetByCodeAsync(string code);
+        Task<Order?> GetByCodeAsync(string code, bool track);
         Task<Order> CreateAsync(Order Order);
-        Task<Order> UpdateAsync(string code, OrderRequestDto orderDto);
-        Task<Order> UpdateStateAsync(string code, OrderState state);
-        Task<Order?> DeleteAsync(string code);
+        Task UpdateAsync();
+        Task DeleteAsync(Order Order);
         Task<List<Order>> GetByStateAndIds(OrderState state, List<long> ids);
     }
 }

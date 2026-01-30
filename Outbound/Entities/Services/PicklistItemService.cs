@@ -4,18 +4,17 @@ using dotnet_Warehouse_Management_System.Outbound.Mappers;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 {
-    public class PicklistItemService : IPicklistItemService
+    public class PicklistItemService(IPicklistItemRepository picklistItemRepository) : IPicklistItemService
     {
-        private readonly IPicklistItemRepository _picklistItemRepository;
-        public PicklistItemService(IPicklistItemRepository picklistItemRepository)
-        {
-            _picklistItemRepository = picklistItemRepository;
-        }
-
         public async Task<PicklistItemDto?> UpdateAsync(string code, PicklistItemDto dto)
         {
-            var updated = await _picklistItemRepository.UpdateAsync(code, dto);
-            return updated?.ToResponseDto();
+            var existing = await picklistItemRepository.GetByCodeAsync(code, true) ?? throw new KeyNotFoundException();
+            existing.State = dto.State;
+            existing.ErrorReason = dto.ErrorReason;
+            existing.qty = dto.Qty;
+            existing.PickedQty = dto.PickedQty;
+            await picklistItemRepository.UpdateAsync();
+            return existing?.ToResponseDto();
         }
     }
 }

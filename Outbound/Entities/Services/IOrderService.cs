@@ -9,10 +9,9 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query);
         Task<OrderResponseDto?> GetByCodeAsync(string code);
         Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto);
-        Task<OrderResponseDto?> UpdateAsync(string code, OrderRequestDto OrderDto);
-        Task<OrderResponseDto?> DeleteAsync(string code);
+        Task<OrderResponseDto?> UpdateAsync(OrderResponseDto OrderDto);
+        Task<bool> DeleteAsync(string code);
         Task<List<OrderResponseDto>> GetByStateAndIdsAsync(OrderState state, List<long> ids);
-        Task<OrderResponseDto?> UpdateStateAsync(string code, OrderState state);
         Task<List<OrderResponseDto>> GetAllAsync();
     }
 }

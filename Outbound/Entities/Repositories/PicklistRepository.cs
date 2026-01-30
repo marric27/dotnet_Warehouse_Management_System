@@ -5,23 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
 {
-    public class PicklistRepository : IPicklistRepository
+    public class PicklistRepository(ApplicationDBContext context) : IPicklistRepository
     {
-        private readonly ApplicationDBContext _context;
-        public PicklistRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
         public async Task<Picklist> CreateAsync(Picklist picklist)
         {
-            await _context.Picklists.AddAsync(picklist);
-            await _context.SaveChangesAsync();
+            await context.Picklists.AddAsync(picklist);
+            await context.SaveChangesAsync();
             return picklist;
         }
 
         public async Task<List<Picklist>> GetAllAsync()
         {
-            return await _context.Picklists.AsNoTracking().Include(p => p.PicklistItemList).ToListAsync();
+            return await context.Picklists.AsNoTracking().Include(p => p.PicklistItemList).ToListAsync();
         }
 
         public async Task<Page<Picklist>> GetAllPaginatedAsync(QueryObject query)
@@ -29,7 +24,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
             int pageNumber = Math.Max(0, query.PageNumber);
             int pageSize = Math.Clamp(query.PageSize, 1, 100);
 
-            var picklists = _context.Picklists.AsNoTracking().AsQueryable();
+            var picklists = context.Picklists.AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query.Code))
             {
@@ -64,7 +59,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
 
         public async Task<Picklist?> GetByCodeAsync(string code)
         {
-            return await _context.Picklists
+            return await context.Picklists
                 .Include(p => p.PicklistItemList)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Code == code);

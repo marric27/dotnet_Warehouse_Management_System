@@ -9,44 +9,37 @@ using dotnet_Warehouse_Management_System.Outbound.Mappers;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 {
-    public class PicklistService : IPicklistService
+    public class PicklistService(IPicklistRepository picklistRepository, IPicklistItemRepository picklistItemRepository) : IPicklistService
     {
-        private readonly IPicklistRepository _picklistRepository;
-        private readonly IPicklistItemRepository _picklistItemRepository;
-        public PicklistService(IPicklistRepository picklistRepository, IPicklistItemRepository picklistItemRepository)
-        {
-            _picklistRepository = picklistRepository;
-            _picklistItemRepository = picklistItemRepository;
-        }
         public async Task<PicklistDto> CreateAsync(PicklistDto picklistDto)
         {
             var picklist = picklistDto.ToEntity();
-            var created = await _picklistRepository.CreateAsync(picklist);
+            var created = await picklistRepository.CreateAsync(picklist);
             return created.ToResponseDto();
         }
 
         public async Task<List<PicklistDto>> GetAllAsync()
         {
-            var pls = await _picklistRepository.GetAllAsync();
+            var pls = await picklistRepository.GetAllAsync();
             return pls.Select(p => p.ToResponseDto()).ToList();
         }
 
         public async Task<Page<PicklistDto>> GetAllPaginatedAsync(QueryObject query)
         {
-            var pls = await _picklistRepository.GetAllPaginatedAsync(query);
+            var pls = await picklistRepository.GetAllPaginatedAsync(query);
             return pls.Map(o => o.ToResponseDto());
         }
 
         public async Task<PicklistDto?> GetByCodeAsync(string code)
         {
-            var pl = await _picklistRepository.GetByCodeAsync(code);
+            var pl = await picklistRepository.GetByCodeAsync(code);
             return pl.ToResponseDto();
         }
 
         public async Task<PicklistItemDto?> GetNextPickListItemAsync(NextItemRequest request)
         {
             var plIds = request.PickListIds;
-            var item = await _picklistItemRepository.FindItemsByStateOrdered(plIds, PicklistItemState.OPEN);
+            var item = await picklistItemRepository.FindItemsByStateOrdered(plIds, PicklistItemState.OPEN);
             return item?.ToResponseDto();
         }
 

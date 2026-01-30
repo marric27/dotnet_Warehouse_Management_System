@@ -9,22 +9,13 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
 {
     [ApiController]
     [Route("api/v1/picklists")]
-    public class PicklistController : ControllerBase
+    public class PicklistController(PicklistGenService picklistGenService, IPicklistService picklistService) : ControllerBase
     {
-        private readonly PicklistGenService _picklistGenService;
-        private readonly IPicklistService _picklistService;
-        public PicklistController(PicklistGenService picklistGenService, IPicklistService picklistService)
-        {
-            _picklistGenService = picklistGenService;
-            _picklistService = picklistService;
-        }
-
         [HttpPost]
         [Route("release")]
         public async Task<IActionResult> GeneratePicklist([FromBody] List<long> ids)
         {
-
-            var picklists = await _picklistGenService.GeneratePicklists(ids);
+            var picklists = await picklistGenService.GeneratePicklists(ids);
             return Created("", picklists);
         }
 
@@ -32,25 +23,21 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
         [Route("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)
         {
-
-            var picklist = await _picklistService.GetByCodeAsync(code);
-            if(picklist == null) return NotFound();
-            return Ok(picklist);
+            var picklist = await picklistService.GetByCodeAsync(code);
+            return picklist != null ? Ok(picklist) : NotFound();
         }
 
         [HttpGet("release-paged")]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
-
-            var pl = await _picklistService.GetAllPaginatedAsync(query);
+            var pl = await picklistService.GetAllPaginatedAsync(query);
             return Ok(pl);
         }
 
         [HttpGet("release")]
         public async Task<IActionResult> GetAll()
         {
-
-            var pl = await _picklistService.GetAllAsync();
+            var pl = await picklistService.GetAllAsync();
             return Ok(pl);
         }
     }

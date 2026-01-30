@@ -11,7 +11,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
         Task<Page<SalesOrderLine>> GetAllAsync(QueryObject query);
         Task<SalesOrderLine?> GetByCodeAsync(string code);
         Task<SalesOrderLine> CreateAsync(SalesOrderLine salesOrderLine);
-        Task<SalesOrderLine> UpdateAsync(string code, SalesOrderLineRequestDto salesOrderLineRequestDto);
-        Task<SalesOrderLine?> DeleteAsync(string code);
+        Task UpdateAsync();
+        Task DeleteAsync(SalesOrderLine salesOrderLine);
     }
 }

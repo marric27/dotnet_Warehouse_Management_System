@@ -6,59 +6,52 @@ using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 {
-    public class OrderService : IOrderService
+    public class OrderService(IOrderRepository orderRepository) : IOrderService
     {
-        private readonly IOrderRepository _orderRepository;
-        public OrderService(IOrderRepository orderRepository)
-        {
-            _orderRepository = orderRepository;
-        }
         public async Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto)
         {
             var order = OrderDto.ToEntity();
             order.GenerateCode();
-            var created = await _orderRepository.CreateAsync(order);
+            var created = await orderRepository.CreateAsync(order);
             return created.ToResponseDto();
         }
 
-        public async Task<OrderResponseDto?> DeleteAsync(string code)
+        public async Task<bool> DeleteAsync(string code)
         {
             throw new NotImplementedException();
         }
 
         public async Task<List<OrderResponseDto>> GetAllAsync()
         {
-            var orders = await _orderRepository.GetAllAsync();
+            var orders = await orderRepository.GetAllAsync();
             return orders.Select(o => o.ToResponseDto()).ToList();  
         }
 
         public async Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query)
         {
-            var orders = await _orderRepository.GetAllPaginatedAsync(query);
+            var orders = await orderRepository.GetAllPaginatedAsync(query);
             return orders.Map(o => o.ToResponseDto());
         }
 
         public async Task<OrderResponseDto?> GetByCodeAsync(string code)
         {
-            var order = await _orderRepository.GetByCodeAsync(code);
+            var order = await orderRepository.GetByCodeAsync(code, false);
             return order?.ToResponseDto();
         }
 
         public async Task<List<OrderResponseDto>> GetByStateAndIdsAsync(OrderState state, List<long> ids)
         {
-            var order = await _orderRepository.GetByStateAndIds(state, ids);
+            var order = await orderRepository.GetByStateAndIds(state, ids);
             return [.. order.Select(order => order.ToResponseDto())];
         }
 
-        public async Task<OrderResponseDto?> UpdateAsync(string code, OrderRequestDto OrderDto)
+        public async Task<OrderResponseDto?> UpdateAsync(OrderResponseDto OrderDto)
         {
-            throw new NotImplementedException();
+            var existingOrder = await orderRepository.GetByCodeAsync(OrderDto.code, true);
+            existingOrder.State = OrderDto.state;
+            await orderRepository.UpdateAsync();
+            return existingOrder.ToResponseDto();
         }
 
-        public async Task<OrderResponseDto?> UpdateStateAsync(string code, OrderState state)
-        {
-            var order = await _orderRepository.UpdateStateAsync(code, state);
-            return order.ToResponseDto();
-        }
     }
 }

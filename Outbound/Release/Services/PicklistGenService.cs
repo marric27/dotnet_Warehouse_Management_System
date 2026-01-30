@@ -44,22 +44,22 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 foreach (var line in order.salesOrderLineList )
                 {
                     string productCode = line.productCode;
-                    //var slot = await _slotService.GetSlotContainingProduct(productCode);
-                    // ######### implement stockunit first //TODO
+                    var slot = await _slotService.GetSlotContainingProduct(productCode);
                     PicklistItemDto itemDto = new()
                     {
-                        code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",
-                        productCode = productCode,
+                        Code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",
+                        ProductCode = productCode,
                         State = Common.PicklistItemState.OPEN,
-                        Quantity = 0,
-                        PickingSequence = 1,//slot.PickingSequence,
-                        SlotCode = "slotcodeprova",//slot.Code,
-                        salesOrderCode = order.code,
-                        salesOrderLineNumber = line.salesOrderLineNumber
+                        Qty = line.quantity,
+                        PickingSequence = slot.PickingSequence,
+                        SlotCode = slot.Code,
+                        SalesOrderCode = order.code,
+                        SalesOrderLineNumber = line.salesOrderLineNumber
                     };
 
                     pickListDto.pickListItemList.Add(itemDto);
-                    await _orderService.UpdateStateAsync(order.code, OrderState.PICKING);
+                    order.state = OrderState.PICKING;
+                    await _orderService.UpdateAsync(order);
                 }
             }
 
@@ -67,11 +67,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 
             foreach (var picklist in pickListMap.Values)
             {
-
                 var picklistEntity = await _picklistService.CreateAsync(picklist);
-
                 result.Add(picklistEntity);
-
             }
             return result;
         }

@@ -7,21 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
 {
-    public class SalesOrderLineRepository : ISalesOrderLineRepository
+    public class SalesOrderLineRepository(ApplicationDBContext context) : ISalesOrderLineRepository
     {
-        private readonly ApplicationDBContext _context;
-        public SalesOrderLineRepository(ApplicationDBContext context)
-        {
-            _context = context;
-        }
         public async Task<SalesOrderLine> CreateAsync(SalesOrderLine salesOrderLine)
         {
-            await _context.SalesOrderLines.AddAsync(salesOrderLine);
-            await _context.SaveChangesAsync();
+            await context.SalesOrderLines.AddAsync(salesOrderLine);
+            await context.SaveChangesAsync();
             return salesOrderLine;
         }
 
-        public Task<SalesOrderLine?> DeleteAsync(string code)
+        public Task DeleteAsync(SalesOrderLine salesOrderLine)
         {
             throw new NotImplementedException();
         }
@@ -36,7 +31,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<SalesOrderLine> UpdateAsync(string code, SalesOrderLineRequestDto salesOrderLineRequestDto)
+        public Task UpdateAsync()
         {
             throw new NotImplementedException();
         }
