@@ -19,9 +19,10 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services
             var su = await stockUnitService.GetByCodeAsync(stockUnitCode) ?? throw new KeyNotFoundException("StockUnit not found");
 
             if (slot.Category != su.Category) throw new ArgumentException("Category mismatch");
-
-            // Assegnazione
-            await stockUnitService.AssingToSlotAsync(su.Code, slot.Code);
+            
+            //Assign to slot
+            su.SlotId = slot.Id;
+            await stockUnitService.UpdateAsync(su);
 
             // Update checkingInfo state
             var ci = await checkingInfoService.GetByStockUnitIdAsync(su.Id) ?? throw new KeyNotFoundException("CheckingInfo not found");
@@ -31,7 +32,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services
             // Recupero Item e valutazione stato
             var item = await grnItemService.GetByIdAsync(ci.GrnItemId);
             await stateService.EvaluateAndProgressGrnItemStateAsync(item);
-
 
             // Ritorna il dato fresco
             return await slotService.GetByCodeAsync(slotCode);

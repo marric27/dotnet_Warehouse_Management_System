@@ -8,6 +8,7 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers
         {
             return new SlotResponseDto
             {
+                Id = slot.Id,
                 Code = slot.Code,
                 Category = slot.Category,
                 PickingSequence = slot.PickingSequence,

@@ -30,9 +30,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         {
             var existingStockUnit = await stockUnitRepository.GetByCodeAsync(stockUnitResponseDto.Code, true) ?? throw new KeyNotFoundException($"StockUnit {stockUnitResponseDto.Code} not found");
             existingStockUnit.Quantity = stockUnitResponseDto.Quantity;
-            existingStockUnit.Category = stockUnitResponseDto.Category;
-            existingStockUnit.ProductCode = stockUnitResponseDto.ProductCode;
             existingStockUnit.SlotId = stockUnitResponseDto.SlotId;
+            existingStockUnit.BatchNumber = stockUnitResponseDto.BatchNumber;
 
             await stockUnitRepository.UpdateAsync();
             return existingStockUnit.ToResponseDto();
@@ -49,22 +48,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         public async Task<StockUnitResponseDto?> GetByIdAsync(long id)
         {
             var stockUnit = await stockUnitRepository.GetByIdAsync(id, false);
-            return stockUnit.ToResponseDto();
-        }
-
-        public async Task<StockUnitResponseDto?> AssingToSlotAsync(string suCode, string slotCode)
-        {
-            // 1. Recupero delle entità tramite i codici (usando i tuoi metodi del repo)
-            var stockUnit = await stockUnitRepository.GetByCodeAsync(suCode, true)
-                            ?? throw new KeyNotFoundException($"StockUnit {suCode} not found");
-
-            var slot = await slotRepository.GetByCodeAsync(slotCode)
-                       ?? throw new KeyNotFoundException($"Slot {slotCode} not found");
-
-            // 2. Eseguiamo l'assegnazione fisica dell'ID dello slot sulla StockUnit
-            stockUnit.SlotId = slot.Id;
-
-            await stockUnitRepository.UpdateAsync();
             return stockUnit.ToResponseDto();
         }
 
