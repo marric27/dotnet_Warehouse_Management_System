@@ -55,8 +55,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
             int notCompliant = item.NotCompliantQty;
             int received = item.ReceivedQty;
 
-            //if (received == 0) item.State(State.PUTAWAY);
-            //else item.State = State.OPEN; // TODO
+            if (received == 0) item.State = State.PUTAWAY;
+            else item.State = State.OPEN;
 
             if (expected <= 0)
                 throw new Exception("Expected qty must be > 0");

@@ -58,13 +58,13 @@ namespace dotnet_Warehouse_Management_System.Data
 
             modelBuilder.Entity<PicklistItem>()
                 .HasMany(p => p.PickingInfos)
-                .WithOne(pi => pi.PickListItem)
-                .HasForeignKey(pi => pi.PickListItemId)
+                .WithOne(pi => pi.PicklistItem)
+                .HasForeignKey(pi => pi.PicklistItemId)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PickingInfo>()
-                .HasOne(p => p.PickListItem)
+                .HasOne(p => p.PicklistItem)
                 .WithMany(p => p.PickingInfos)
-                .HasForeignKey(p => p.PickListItemId);
+                .HasForeignKey(p => p.PicklistItemId);
 
             modelBuilder.Entity<GrnItem>()
                 .HasMany(c => c.CheckingInfoList)

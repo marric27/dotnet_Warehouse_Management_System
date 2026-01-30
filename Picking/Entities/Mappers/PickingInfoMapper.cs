@@ -18,8 +18,8 @@ namespace dotnet_Warehouse_Management_System.Picking.Mappers
                 StockUnitCode = entity.StockUnitCode,
                 BatchNumber = entity.BatchNumber,
                 ExpirationDate = entity.ExpirationDate,
-                Quantity = entity.Quantity
-                //TODO
+                Quantity = entity.Quantity,
+                PicklistItemId = entity.PicklistItemId
             };
         }
 
@@ -37,6 +37,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Mappers
                 BatchNumber = dto.BatchNumber,
                 ExpirationDate = dto.ExpirationDate,
                 Quantity = dto.Quantity,
+                PicklistItemId = dto.PicklistItemId
             };
         }
     }

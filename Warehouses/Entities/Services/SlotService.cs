@@ -60,7 +60,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 
         public async Task<SlotResponseDto?> GetSlotContainingProduct(string productCode)
         {
-            var slot = await slotRepository.GetSlotContainingProduct(productCode);
+            var slot = await slotRepository.GetSlotContainingProductAsync(productCode);
             return slot?.ToResponseDto();
         }
     }

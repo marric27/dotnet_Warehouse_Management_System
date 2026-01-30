@@ -25,12 +25,12 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 
             var prodToAdd = await productService.GetByCodeAsync(grnItemRequestDto.ProductCode) ?? throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
 
-            //_grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
-            // progressione stati
+            grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
 
             grnItemRequestDto.GrnId = grn.Id;
             var created = await grnItemService.CreateAsync(grnItemRequestDto);
 
+            await grnItemStateService.EvaluateAndProgressGrnItemStateAsync(created);
             return created;
         }
 

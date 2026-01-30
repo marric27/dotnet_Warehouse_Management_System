@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using dotnet_Warehouse_Management_System.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
 {
@@ -16,5 +17,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         public int NotCompliantQty { get; set; }
         public string? Notes { get; set; }
         public long GrnId { get; set; }
+        public State State { get; set; }
     }
 }

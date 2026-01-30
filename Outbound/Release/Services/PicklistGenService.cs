@@ -6,22 +6,11 @@ using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 {
-    public class PicklistGenService
+    public class PicklistGenService(IOrderService orderService, ISlotService slotService, IPicklistService picklistService)
     {
-        private readonly IOrderService _orderService;
-        private readonly ISlotService _slotService;
-        private readonly IPicklistService _picklistService;
-
-        public PicklistGenService(IOrderService orderService, ISlotService slotService, IPicklistService picklistService)
-        {
-            _orderService = orderService;
-            _slotService = slotService;
-            _picklistService = picklistService;
-        }
-
         public async Task<List<PicklistDto>> GeneratePicklists(List<long> OrderIds)
         {
-            List<OrderResponseDto> ordersOpen = await _orderService.GetByStateAndIdsAsync(OrderState.OPEN, OrderIds);
+            List<OrderResponseDto> ordersOpen = await orderService.GetByStateAndIdsAsync(OrderState.OPEN, OrderIds);
 
             Dictionary<string, PicklistDto> pickListMap = [];
             string _releaseNumber = $"PKL-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
@@ -44,7 +33,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 foreach (var line in order.salesOrderLineList )
                 {
                     string productCode = line.productCode;
-                    var slot = await _slotService.GetSlotContainingProduct(productCode);
+                    var slot = await slotService.GetSlotContainingProduct(productCode);
                     PicklistItemDto itemDto = new()
                     {
                         Code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",
@@ -59,7 +48,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 
                     pickListDto.pickListItemList.Add(itemDto);
                     order.state = OrderState.PICKING;
-                    await _orderService.UpdateAsync(order);
+                    await orderService.UpdateAsync(order);
                 }
             }
 
@@ -67,7 +56,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 
             foreach (var picklist in pickListMap.Values)
             {
-                var picklistEntity = await _picklistService.CreateAsync(picklist);
+                var picklistEntity = await picklistService.CreateAsync(picklist);
                 result.Add(picklistEntity);
             }
             return result;

@@ -16,7 +16,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
         {
             var grnItem = grnItemRequestDto.ToGrnItem();
             grnItem.GenerateCode();
-            grnItem.State = State.OPEN;
             var createdItem = await grnItemRepository.CreateAsync(grnItem);
 
             return createdItem.ToResponseDto();

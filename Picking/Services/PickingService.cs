@@ -8,137 +8,148 @@ using dotnet_Warehouse_Management_System.Picking.Entities.Service;
 
 namespace dotnet_Warehouse_Management_System.Picking.Services
 {
-    public class PickingService(IPicklistService _picklistService, IPicklistItemService _picklistItemService, IPickingInfoService _pickingInfoService, IStockUnitService _stockUnitService)
+    public class PickingService(IPicklistService picklistService, IPicklistItemService picklistItemService, IPickingInfoService pickingInfoService, IStockUnitService stockUnitService)
     {
-        public Task<PicklistItemDto> GetNextPickListItem(NextItemRequest nextItemRequest) => _picklistService.GetNextPickListItemAsync(nextItemRequest);
+        public async Task<PicklistItemDto> GetNextPickListItem(NextItemRequest nextItemRequest) => await picklistService.GetNextPickListItemAsync(nextItemRequest);
 
-        //        public async Task ConfirmPickingAsync(ConfirmPickingRequest request)
-        //        {
-        //            PicklistItemDto picklistItem = await LoadPickListItem(request.PickListCode, request.PickListItemCode);
-        //            Dictionary<string, int> stockUnitQuantities = request.stockUnitQuantities
-        //                .ToDictionary(
-        //                    x => x.SuId,
-        //                    x => x.Quantity
-        //                );
-        //            if (stockUnitQuantities == null || stockUnitQuantities.Count == 0)
-        //            {
-        //                throw new Exception("No stock units provided for picking");
-        //            }
-        //            int toPick = stockUnitQuantities.Values.Sum();
-        //            if (toPick > picklistItem.Quantity - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
-
-        //            ErrorReason? errorReason;
-        //            if (toPick < picklistItem.PickedQty && request.ErrorReason != null)
-        //            {
-        //                errorReason = request.ErrorReason.Value;
-        //            }
-        //            else if (toPick == picklistItem.Quantity)
-        //            {
-        //                errorReason = null;
-        //            }
-        //            else
-        //            {
-        //                throw new Exception("Error reason cant be omitted when qty to pick is lower than ");
-        //            }
-
-        //            Dictionary<string, StockUnitResponseDto> StockUnitsByCode = [];
-        //            foreach (string code in stockUnitQuantities.Keys)
-        //            {
-        //                StockUnitResponseDto stockUnit = await _stockUnitService.GetByCodeAsync(code);
-        //                StockUnitsByCode.Add(stockUnit.Code, stockUnit);
-        //            }
-
-        //            CanPickFromSU(stockUnitQuantities, StockUnitsByCode, picklistItem);
-
-        //            ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
-        //            UpdatePicklistItem(picklistItem, totalPickedQty, errorReason);
-        //        }
-
-        //        private void UpdatePicklistItem(PicklistItemDto picklistItem, int totalPickedQty, ErrorReason? errorReason)
-        //        {
-        //            int pickedQty = picklistItem.PickedQty + totalPickedQty;
-        //            picklistItem.PickedQty = pickedQty;
-        //            if (pickedQty == picklistItem.Quantity) picklistItem.State = PicklistItemState.PICKED;
-        //            picklistItem.ErrorReason = errorReason;
-
-        //            throw new NotImplementedException();
-        //        }
-
-        //        private void ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem)
-        //        {
-        //            foreach (var entry in requested)
-        //            {
-        //                string code = entry.Key;
-        //                int quantityToPick = entry.Value;
-
-        //                StockUnitResponseDto su = stockUnitsByCode[code];
-        //                int oldQty = su.Quantity;
-        //                su.Quantity = oldQty - quantityToPick;
-        //                _stockUnitService.UpdateAsync(su.Id, su);
-
-        //                CreatePickingInfo(su, quantityToPick, picklistItem);
-
-        //            }
-        //        }
+        public async Task ConfirmPickingAsync(ConfirmPickingRequest request)
+        {
+            PicklistItemDto picklistItem = await LoadPickListItem(request.PickListCode, request.PickListItemCode);
+            Dictionary<string, int> stockUnitQuantities = request.stockUnitQuantities
+                .ToDictionary(
+                    x => x.SuId,
+                    x => x.Quantity
+                );
+            if (stockUnitQuantities == null || stockUnitQuantities.Count == 0)
+            {
+                throw new Exception("No stock units provided for picking");
+            }
+            int toPick = stockUnitQuantities.Values.Sum();
+            if (toPick > picklistItem.Qty - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
 
 
+            int totalAfterPicking = picklistItem.PickedQty + toPick;
+            ErrorReason errorReason;
 
-        //        private void CreatePickingInfo(StockUnitResponseDto su, int pickedQty, PicklistItemDto picklistItem)
-        //        {
-        //            PickingInfoDto pickingInfo = new PickingInfoDto()
-        //            {
-        //                User = "USR-01QWERTY",
-        //                Timestamp = DateTime.Now,
-        //                Quantity = pickedQty,
-        //                StockUnitCode = su.Code,
-        //                BatchNumber = su.BatchNumber,
-        //                ExpirationDate = su.ExpirationDate,
+            // Caso A: Abbiamo prelevato tutto quello che serviva
+            if (totalAfterPicking == picklistItem.Qty)
+            {
+                errorReason = ErrorReason.NO_ERROR;
+            }
+            // Caso B: Abbiamo prelevato meno del totale richiesto
+            else if (totalAfterPicking < picklistItem.Qty)
+            {
+                if (request.ErrorReason != null)
+                {
+                    errorReason = request.ErrorReason.Value;
+                }
+                else
+                {
+                    // Questo è il punto dove lanciavi l'eccezione
+                    throw new Exception($"Error reason is required when total picked qty ({totalAfterPicking}) is lower than requested qty ({picklistItem.Qty})");
+                }
+            }
+            // Caso C: Più del richiesto (già gestito sopra, ma per sicurezza)
+            else
+            {
+                throw new Exception("Cannot pick more than requested quantity");
+            }
 
-        //            };
-        //            var created = _pickingInfoService.CreateAsync(pickingInfo);
-        //        }
+            Dictionary<string, StockUnitResponseDto> StockUnitsByCode = [];
+            foreach (string code in stockUnitQuantities.Keys)
+            {
+                StockUnitResponseDto stockUnit = await stockUnitService.GetByCodeAsync(code);
+                StockUnitsByCode.Add(stockUnit.Code, stockUnit);
+            }
 
-        //        private void CanPickFromSU(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem)
-        //        {
-        //            foreach (var entry in requested)
-        //            {
-        //                string code = entry.Key;
-        //                int quantity = entry.Value;
+            CanPickFromSU(stockUnitQuantities, StockUnitsByCode, picklistItem);
 
-        //                if (!stockUnitsByCode.TryGetValue(code, out var su))
-        //                {
-        //                    throw new KeyNotFoundException($"StockUnit {code} not found in stockUnits dictionary.");
-        //                }
+            await ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
+            await UpdatePicklistItem(picklistItem, toPick, errorReason);
+        }
 
-        //                if (!su.ProductCode.Equals(picklistItem.productCode, StringComparison.OrdinalIgnoreCase))
-        //                {
-        //                    throw new Exception(
-        //                        $"StockUnit {code} contains product {su.ProductCode} " +
-        //                        $"but PickListItem requires product {picklistItem.productCode}"
-        //                    );
-        //                }
+        private async Task<PicklistItemDto> LoadPickListItem(string pickListCode, string pickListItemCode)
+        {
+            var picklistDto = await picklistService.GetByCodeAsync(pickListCode);
+            var item = picklistDto.pickListItemList.FirstOrDefault(i => i.Code == pickListItemCode);
 
-        //                if (quantity > su.Quantity)
-        //                {
-        //                    throw new Exception(
-        //                        $"Requested quantity {quantity} > available quantity {su.Quantity} for stock unit: {code}"
-        //                    );
-        //                }
-        //            }
-        //        }
+            if (item.State != PicklistItemState.OPEN)
+            {
+                throw new Exception("PickListItem is not OPEN: " + item.State);
+            }
 
-        //        private async Task<PicklistItemDto> LoadPickListItem(string pickListCode, string pickListItemCode)
-        //        {
-        //            var picklistDto = await _picklistService.GetByCodeAsync(pickListCode);
-        //            var item = picklistDto.pickListItemList.FirstOrDefault(i => i.code == pickListItemCode);
+            return item;
+        }
 
-        //            if (item.State != PicklistItemState.OPEN)
-        //            {
-        //                throw new Exception("PickListItem is not OPEN: " + item.State);
-        //            }
+        private void CanPickFromSU(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem)
+        {
+            foreach (var entry in requested)
+            {
+                string code = entry.Key;
+                int quantity = entry.Value;
 
-        //            return item;
-        //        }
+                if (!stockUnitsByCode.TryGetValue(code, out var su))
+                {
+                    throw new KeyNotFoundException($"StockUnit {code} not found in stockUnits dictionary.");
+                }
 
+                if (!su.ProductCode.Equals(picklistItem.ProductCode, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new Exception(
+                        $"StockUnit {code} contains product {su.ProductCode} " +
+                        $"but PickListItem requires product {picklistItem.ProductCode}"
+                    );
+                }
+
+                if (quantity > su.Quantity)
+                {
+                    throw new Exception(
+                        $"Requested quantity {quantity} > available quantity {su.Quantity} for stock unit: {code}"
+                    );
+                }
+            }
+        }
+
+        private async Task UpdatePicklistItem(PicklistItemDto picklistItem, int totalPickedQty, ErrorReason errorReason)
+        {
+            int pickedQty = picklistItem.PickedQty + totalPickedQty;
+            picklistItem.PickedQty = pickedQty;
+            if (pickedQty == picklistItem.Qty) picklistItem.State = PicklistItemState.PICKED;
+            picklistItem.ErrorReason = errorReason;
+            await picklistItemService.UpdateAsync(picklistItem.Code, picklistItem);
+        }
+
+        private async Task ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem)
+        {
+            foreach (var entry in requested)
+            {
+                string code = entry.Key;
+                int quantityToPick = entry.Value;
+
+                StockUnitResponseDto su = stockUnitsByCode[code];
+                int oldQty = su.Quantity;
+                su.Quantity = oldQty - quantityToPick;
+                await stockUnitService.UpdateAsync(su);
+
+                await CreatePickingInfo(su, quantityToPick, picklistItem);
+
+            }
+        }
+
+        private async Task CreatePickingInfo(StockUnitResponseDto su, int pickedQty, PicklistItemDto picklistItem)
+        {
+            PickingInfoDto pickingInfo = new()
+            {
+                User = "USR-01QWERTY",
+                Timestamp = DateTime.Now,
+                Quantity = pickedQty,
+                StockUnitCode = su.Code,
+                BatchNumber = su.BatchNumber,
+                ExpirationDate = su.ExpirationDate,
+                PicklistItemCode = picklistItem.Code,
+                PicklistItemId = picklistItem.Id
+            };
+            await pickingInfoService.CreateAsync(pickingInfo);
+        }
     }
 }

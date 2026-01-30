@@ -70,9 +70,13 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
             return await context.Slots.AsNoTracking().AsQueryable().FirstOrDefaultAsync(s => s.Code == code);
         }
 
-        public async Task<Slot?> GetSlotContainingProduct(string productCode)
+        public async Task<Slot?> GetSlotContainingProductAsync(string productCode)
         {
-            return await context.Slots.AsNoTracking().Where(s => s.Product.Code == productCode).FirstOrDefaultAsync();
+            return await context.Slots
+                .AsNoTracking()
+                .Where(s => s.StockUnits.Any(su => su.ProductCode == productCode))
+                .OrderBy(s => s.PickingSequence)
+                .FirstOrDefaultAsync();
         }
 
         public async Task UpdateAsync() => await context.SaveChangesAsync();
