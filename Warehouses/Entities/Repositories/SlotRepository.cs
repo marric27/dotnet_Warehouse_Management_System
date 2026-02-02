@@ -2,6 +2,7 @@
 using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
+using dotnet_Warehouse_Management_System.Outbound.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
@@ -20,7 +21,7 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
         public async Task<Slot?> GetByCodeAsync(string code, bool track)
         {
             var query = context.Slots.AsQueryable();
-            if (!track) query = query.AsNoTracking();
+            if (!track) query = query.AsNoTracking().Include(s => s.StockUnits);
             return await query.FirstOrDefaultAsync(p => p.Code == code);
         }
 
@@ -31,6 +32,11 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
                 .Where(s => s.StockUnits.Any(su => su.ProductCode == productCode))
                 .OrderBy(s => s.PickingSequence)
                 .FirstOrDefaultAsync();
+        }
+
+        public override async Task<List<Slot>> GetAllAsync()
+        {
+            return await context.Slots.AsNoTracking().Include(s => s.StockUnits).ToListAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
+﻿using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers
 {
@@ -12,7 +13,8 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers
                 Code = slot.Code,
                 Category = slot.Category,
                 PickingSequence = slot.PickingSequence,
-                Capacity = slot.Capacity
+                Capacity = slot.Capacity,
+                StockUnits = slot.StockUnits.Select(su => su.ToResponseDto()).ToList(),
                 //Product = slot.Product
             };
         }

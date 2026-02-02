@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.Products.Entities;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,6 +13,6 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos
         public int PickingSequence { get; set; }
         public int Capacity { get; set; }
         public Product? Product { get; set; }
-        //public List<StockUnitDto> StockUnits { get; set; }
+        public List<StockUnitResponseDto> StockUnits { get; set; }
     }
 }
