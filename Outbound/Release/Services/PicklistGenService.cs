@@ -29,7 +29,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                     pickListMap[order.customerCode] = pickListDto;
                 }
 
-                foreach (var line in order.salesOrderLineList )
+                foreach (var line in order.salesOrderLineList)
                 {
                     string productCode = line.productCode;
                     var slot = await slotService.GetSlotContainingProduct(productCode);
@@ -47,9 +47,9 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                     };
 
                     pickListDto.pickListItemList.Add(itemDto);
-                    order.state = OrderState.PICKING;
-                    await orderService.UpdateAsync(order);
                 }
+                order.state = OrderState.PICKING;
+                await orderService.UpdateAsync(order);
             }
 
             List<PicklistDto> result = [];
