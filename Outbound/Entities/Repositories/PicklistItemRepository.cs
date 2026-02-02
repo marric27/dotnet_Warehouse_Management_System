@@ -1,16 +1,12 @@
-﻿using dotnet_Warehouse_Management_System.Common;
+﻿using dotnet_Warehouse_Management_System.BaseRepository;
+using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
 {
-    public class PicklistItemRepository(ApplicationDBContext context) : IPicklistItemRepository
+    public class PicklistItemRepository(ApplicationDBContext context) : BaseRepository<PicklistItem>(context), IPicklistItemRepository
     {
-        public async Task<List<PicklistItem>> GetAllAsync()
-        {
-            return await context.PicklistItems.AsNoTracking().ToListAsync();
-        }
-
         public async Task<PicklistItem?> FindItemsByStateOrdered(List<long> plIds, PicklistItemState state)
         {
             return await context.PicklistItems
@@ -19,9 +15,6 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
                 .ThenBy(pli => pli.SlotCode)
                 .FirstOrDefaultAsync();
         }
-
-        public async Task UpdateAsync() => await context.SaveChangesAsync();
-
         public async Task<PicklistItem?> GetByCodeAsync(string code, bool track = false)
         {
             var query = context.PicklistItems.AsQueryable();

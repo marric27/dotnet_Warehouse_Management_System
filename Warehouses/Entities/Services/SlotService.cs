@@ -11,7 +11,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
     {
         public async Task<Page<SlotResponseDto>> GetAllAsync(QueryObject query)
         {
-            var slots = await slotRepository.GetAllAsync(query);
+            var slots = await slotRepository.GetAllPaginatedAsync(query);
 
             var pagedDto = new Page<SlotResponseDto>
             {
@@ -30,7 +30,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 
         public async Task<SlotResponseDto?> GetByCodeAsync(string code)
         {
-            var slot = await slotRepository.GetByCodeAsync(code);
+            var slot = await slotRepository.GetByCodeAsync(code, false);
             return slot?.ToResponseDto();
         }
 
@@ -45,16 +45,16 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 
         public async Task<SlotResponseDto?> UpdateAsync(string code, SlotRequestDto slotDto)
         {
-            var existingSlot = await slotRepository.GetByCodeAsync(code);
+            var existingSlot = await slotRepository.GetByCodeAsync(code, true);
             await slotRepository.UpdateAsync();
             return existingSlot.ToResponseDto();
         }
 
         public async Task<bool> DeleteAsync(string code)
         {
-            var deleted = await slotRepository.GetByCodeAsync(code);
-            if (deleted == null) return false;
-            await slotRepository.DeleteAsync(code);
+            var slot = await slotRepository.GetByCodeAsync(code, true);
+            if (slot == null) return false;
+            await slotRepository.DeleteAsync(slot);
             return true;
         }
 

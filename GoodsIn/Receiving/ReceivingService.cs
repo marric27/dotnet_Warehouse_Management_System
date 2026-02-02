@@ -39,9 +39,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
             return grnService.GetAllAsync(query);
         }
 
-        public Task<List<GrnItemResponseDto>> GetAllGrnItemsAsync(QueryObject query)
+        public Task<List<GrnItemResponseDto>> GetAllGrnItemsAsync()
         {
-            return grnItemService.GetAllAsync(query);
+            return grnItemService.GetAllAsync();
         }
 
         public Task<GrnResponseDto> GetGrnByCodeAsync(string code)

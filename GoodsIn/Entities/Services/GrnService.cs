@@ -49,7 +49,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
         public async Task<Page<GrnResponseDto>> GetAllAsync(QueryObject query)
         {
-            var pagedGrns = await grnRepository.GetAllAsync(query);
+            var pagedGrns = await grnRepository.GetAllPaginatedAsync(query);
 
             var pagedDto = new Page<GrnResponseDto>
             {
@@ -71,7 +71,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
 
         public async Task<GrnResponseDto?> GetByIdAsync(long id)
         {
-            var grn = await grnRepository.GetById(id, false);
+            var grn = await grnRepository.GetByIdAsync(id, false);
             return grn.ToResponseDto();
         }
     }

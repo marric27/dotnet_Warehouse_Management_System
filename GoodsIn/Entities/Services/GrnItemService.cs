@@ -4,7 +4,6 @@ using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
-using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Services
@@ -27,9 +26,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
             return grnItem?.ToResponseDto();
         }
 
-        public async Task<List<GrnItemResponseDto>> GetAllAsync(QueryObject query)
+        public async Task<List<GrnItemResponseDto>> GetAllAsync()
         {
-            var grnItems = await grnItemRepository.GetAllAsync(query);
+            var grnItems = await grnItemRepository.GetAllAsync();
             return grnItems.Select(grnItem => grnItem.ToResponseDto()).ToList();
         }
 

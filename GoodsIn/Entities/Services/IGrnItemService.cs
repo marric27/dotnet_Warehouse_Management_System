@@ -13,7 +13,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Services
         Task<GrnItemResponseDto?> GetByIdAsync(long Id);
         Task<GrnItemResponseDto?> GetByCodeAsync(string code);
 
-        Task<List<GrnItemResponseDto>> GetAllAsync(QueryObject query);
+        Task<List<GrnItemResponseDto>> GetAllAsync();
 
         Task<bool> DeleteAsync(string code);
 
