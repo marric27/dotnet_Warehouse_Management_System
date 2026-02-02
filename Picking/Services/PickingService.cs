@@ -18,9 +18,10 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             var picklistDto = await picklistService.GetByCodeAsync(request.PickListCode);
             PicklistItemDto picklistItem = await LoadPickListItem(picklistDto, request.PickListItemCode);
             Dictionary<string, int> stockUnitQuantities = request.stockUnitQuantities
+                .GroupBy(x => x.SuId)
                 .ToDictionary(
-                    x => x.SuId,
-                    x => x.Quantity
+                    g => g.Key,
+                    g => g.Sum(x => x.Quantity)
                 );
             if (stockUnitQuantities == null || stockUnitQuantities.Count == 0)
             {

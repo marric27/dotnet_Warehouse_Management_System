@@ -14,8 +14,7 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Mappers
                 Category = slot.Category,
                 PickingSequence = slot.PickingSequence,
                 Capacity = slot.Capacity,
-                StockUnits = slot.StockUnits.Select(su => su.ToResponseDto()).ToList(),
-                //Product = slot.Product
+                StockUnits = slot.StockUnits.Select(su => su.ToResponseDto()).ToList()
             };
         }
 
