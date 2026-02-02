@@ -16,6 +16,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
                 Code = entity.Code,
                 ReleaseNumber = entity.ReleaseNumber,
                 CustomerCode = entity.CustomerCode,
+                State = entity.State,
                 pickListItemList = entity.PicklistItemList?
                     .Select(p => p.ToResponseDto())
                     .ToList()
@@ -32,6 +33,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Mappers
                 Code = dto.Code,
                 ReleaseNumber = dto.ReleaseNumber,
                 CustomerCode = dto.CustomerCode,
+                State = dto.State,
                 PicklistItemList = dto.pickListItemList?
                 .Select(PicklistItemMapper.ToEntity)
                 .ToList()

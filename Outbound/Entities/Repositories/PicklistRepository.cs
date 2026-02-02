@@ -22,11 +22,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
                 .ToPagedListAsync(query.PageNumber, query.PageSize);
         }
 
-        public async Task<Picklist?> GetByCodeAsync(string code)
+        public async Task<Picklist?> GetByCodeAsync(string code, bool track)
         {
-            return await context.Picklists
+            var query = context.Picklists.AsQueryable();
+            if (!track) query = query.AsNoTracking();
+            return await query
                 .Include(p => p.PicklistItemList)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Code == code);
         }
     }

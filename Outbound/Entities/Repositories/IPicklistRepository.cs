@@ -7,6 +7,6 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
     public interface IPicklistRepository : IBaseRepository<Picklist>
     {
         Task<Page<Picklist>> GetAllPaginatedAsync(QueryObject query);
-        Task<Picklist?> GetByCodeAsync(string code);
+        Task<Picklist?> GetByCodeAsync(string code, bool track);
     }
 }

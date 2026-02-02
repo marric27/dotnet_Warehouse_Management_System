@@ -14,6 +14,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         public async Task<PicklistDto> CreateAsync(PicklistDto picklistDto)
         {
             var picklist = picklistDto.ToEntity();
+            picklist.State = PicklistState.OPEN;
             var created = await picklistRepository.CreateAsync(picklist);
             return created.ToResponseDto();
         }
@@ -32,7 +33,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 
         public async Task<PicklistDto?> GetByCodeAsync(string code)
         {
-            var pl = await picklistRepository.GetByCodeAsync(code);
+            var pl = await picklistRepository.GetByCodeAsync(code, false);
             return pl.ToResponseDto();
         }
 
@@ -43,5 +44,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             return item?.ToResponseDto();
         }
 
+        public async Task<PicklistDto?> UpdateAsync(PicklistDto picklistDto)
+        {
+            var existingPicklist = await picklistRepository.GetByCodeAsync(picklistDto.Code, true) ?? throw new KeyNotFoundException();
+            existingPicklist.State = picklistDto.State;
+            await picklistRepository.UpdateAsync();
+            return existingPicklist.ToResponseDto();
+        }
     }
 }

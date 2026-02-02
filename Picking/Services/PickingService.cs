@@ -2,6 +2,7 @@
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.Outbound.Dtos;
+using dotnet_Warehouse_Management_System.Outbound.Entities;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
 using dotnet_Warehouse_Management_System.Picking.Dtos;
 using dotnet_Warehouse_Management_System.Picking.Entities.Service;
@@ -14,7 +15,8 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
         public async Task ConfirmPickingAsync(ConfirmPickingRequest request)
         {
-            PicklistItemDto picklistItem = await LoadPickListItem(request.PickListCode, request.PickListItemCode);
+            var picklistDto = await picklistService.GetByCodeAsync(request.PickListCode);
+            PicklistItemDto picklistItem = await LoadPickListItem(picklistDto, request.PickListItemCode);
             Dictionary<string, int> stockUnitQuantities = request.stockUnitQuantities
                 .ToDictionary(
                     x => x.SuId,
@@ -64,12 +66,11 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             CanPickFromSU(stockUnitQuantities, StockUnitsByCode, picklistItem);
 
             await ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
-            await UpdatePicklistItem(picklistItem, toPick, errorReason);
+            await UpdatePicklistItem(picklistDto, picklistItem, toPick, errorReason);
         }
 
-        private async Task<PicklistItemDto> LoadPickListItem(string pickListCode, string pickListItemCode)
+        private async Task<PicklistItemDto> LoadPickListItem(PicklistDto picklistDto, string pickListItemCode)
         {
-            var picklistDto = await picklistService.GetByCodeAsync(pickListCode);
             var item = picklistDto.pickListItemList.FirstOrDefault(i => i.Code == pickListItemCode);
 
             if (item.State != PicklistItemState.OPEN)
@@ -109,13 +110,30 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             }
         }
 
-        private async Task UpdatePicklistItem(PicklistItemDto picklistItem, int totalPickedQty, ErrorReason errorReason)
+        private async Task UpdatePicklistItem(PicklistDto picklistDto, PicklistItemDto picklistItem, int totalPickedQty, ErrorReason errorReason)
         {
             int pickedQty = picklistItem.PickedQty + totalPickedQty;
             picklistItem.PickedQty = pickedQty;
-            if (pickedQty == picklistItem.Qty) picklistItem.State = PicklistItemState.PICKED;
+            if (pickedQty == picklistItem.Qty) 
+            {
+                picklistItem.State = PicklistItemState.PICKED;
+                await UpdatePicklist(picklistDto);
+            }
             picklistItem.ErrorReason = errorReason;
             await picklistItemService.UpdateAsync(picklistItem.Code, picklistItem);
+        }
+
+        private async Task UpdatePicklist(PicklistDto picklistDto)
+        {
+            foreach (var item in picklistDto.pickListItemList)
+            {
+                if (item.State == PicklistItemState.OPEN)
+                {
+                    return;
+                }
+            }
+            picklistDto.State = PicklistState.CLOSED;
+            await picklistService.UpdateAsync(picklistDto);
         }
 
         private async Task ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem)
@@ -131,7 +149,6 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
                 await stockUnitService.UpdateAsync(su);
 
                 await CreatePickingInfo(su, quantityToPick, picklistItem);
-
             }
         }
 
