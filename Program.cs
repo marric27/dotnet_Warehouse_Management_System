@@ -1,8 +1,26 @@
+using dotnet_Warehouse_Management_System.Customers.Entities.Repository;
+using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Products.Entities;
-using dotnet_Warehouse_Management_System.Warehouses.Entities;
+using dotnet_Warehouse_Management_System.GoodsIn;
+using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Receiving;
+using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using dotnet_Warehouse_Management_System.Outbound.Entities.Repositories;
+using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
+using dotnet_Warehouse_Management_System.Outbound.Release.Services;
+using dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services;
+using dotnet_Warehouse_Management_System.Picking.Entities.Repository;
+using dotnet_Warehouse_Management_System.Picking.Entities.Service;
+using dotnet_Warehouse_Management_System.Picking.Services;
+using dotnet_Warehouse_Management_System.Products.Entities.Repository;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
+using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,13 +41,49 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //builder.Services.AddOpenApi();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+builder.Services.AddScoped<IGrnRepository, GrnRepository>();
+builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
+builder.Services.AddScoped<IGrnService, GrnService>();
+builder.Services.AddScoped<IGrnItemService, GrnItemService>();
+builder.Services.AddScoped<ReceivingService>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IGrnItemStateService, GrnItemStateService>();
+builder.Services.AddScoped<ISalesOrderLineRepository, SalesOrderLineRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<SalesOrderService>();
+builder.Services.AddScoped<PicklistGenService>();
+builder.Services.AddScoped<IPicklistService, PicklistService>();
+builder.Services.AddScoped<IPicklistRepository, PicklistRepository>();
+builder.Services.AddScoped<IPicklistItemRepository, PicklistItemRepository>();
+builder.Services.AddScoped<IPicklistItemService, PicklistItemService>();
+builder.Services.AddScoped<IPickingInfoRepository, PickingInfoRepository>();
+builder.Services.AddScoped<IPickingInfoService, PickingInfoService>();
+builder.Services.AddScoped<PickingService>();
+builder.Services.AddScoped<IStockUnitService, StockUnitService>();
+builder.Services.AddScoped<IStockUnitRepository, StockUnitRepository>();
+builder.Services.AddScoped<ICheckingInfoRepository, CheckingInfoRepository>();
+builder.Services.AddScoped<ICheckingInfoService, CheckingInfoService>();
+builder.Services.AddScoped<CheckGoodsInService>();
+builder.Services.AddScoped<PutawayService>();
+
 
 var app = builder.Build();
 

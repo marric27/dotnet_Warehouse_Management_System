@@ -1,0 +1,17 @@
+﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Helpers;
+using dotnet_Warehouse_Management_System.Outbound.Dtos;
+
+namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
+{
+    public interface IOrderService
+    {
+        Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query);
+        Task<OrderResponseDto?> GetByCodeAsync(string code);
+        Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto);
+        Task<OrderResponseDto?> UpdateAsync(OrderResponseDto OrderDto);
+        Task<bool> DeleteAsync(string code);
+        Task<List<OrderResponseDto>> GetByStateAndIdsAsync(OrderState state, List<long> ids);
+        Task<List<OrderResponseDto>> GetAllAsync();
+    }
+}

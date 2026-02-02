@@ -6,6 +6,7 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos
 {
     public class SlotResponseDto
     {
+        public long Id { get; set; }
         public required string Code { get; set; }
         public Category Category { get; set; }
         public int PickingSequence { get; set; }

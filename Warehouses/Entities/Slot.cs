@@ -1,4 +1,6 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities;
+using dotnet_Warehouse_Management_System.Products.Entities;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities
 {
@@ -9,6 +11,9 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities
         public int PickingSequence { get; set; }
         public int Capacity { get; set; }
         public Category Category { get; set; }
+        public long? ProductId { get; set; }
+        public Product? Product { get; set; }
+        public List<StockUnit> StockUnits { get; set; } = [];
 
         public void GenerateCode()
         {
