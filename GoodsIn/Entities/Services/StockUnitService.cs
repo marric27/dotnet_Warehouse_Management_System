@@ -1,7 +1,4 @@
-using dotnet_Warehouse_Management_System.Common;
-using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Mappers;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
@@ -54,6 +51,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Entities.Services
         public async Task<List<StockUnitResponseDto>> GetAllAsync()
         {
             var stockunits = await stockUnitRepository.GetAllAsync();
+            Console.WriteLine(stockunits.Select(su => su.ToResponseDto()).ToList().Count);
             return stockunits.Select(su => su.ToResponseDto()).ToList();
         }
 

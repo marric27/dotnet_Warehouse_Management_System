@@ -1,5 +1,4 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
-using System.ComponentModel.DataAnnotations;
 
 namespace dotnet_Warehouse_Management_System.Products.Entities.Dtos
 {

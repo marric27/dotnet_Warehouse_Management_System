@@ -14,7 +14,6 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
             int assigned = item.CheckingInfoList?.Sum(ci => ci.Quantity) ?? 0;
             State current = item.State == null ? State.OPEN : item.State;
 
-
             // Passaggio a CHECKED
             if (current == State.OPEN && assigned >= received && received > 0)
             {

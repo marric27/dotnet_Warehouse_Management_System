@@ -10,7 +10,7 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Repository
     {
         public async Task<Page<Product>> GetAllPaginatedAsync(QueryObject query)
         {
-            return await _context.Products
+            return await context.Products
                 .AsNoTracking()
                 .Where(p => string.IsNullOrEmpty(query.Code) || p.Code.Contains(query.Code))
                 .OrderBy(p => p.Id)

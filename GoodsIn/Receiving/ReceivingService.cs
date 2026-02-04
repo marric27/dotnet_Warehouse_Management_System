@@ -1,5 +1,6 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Helpers;
+using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
@@ -7,7 +8,7 @@ using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 {
-    public class ReceivingService(IGrnService grnService, IGrnItemService grnItemService, IProductService productService, IGrnItemStateService grnItemStateService)
+    public class ReceivingService(ApplicationDBContext context, IGrnService grnService, IGrnItemService grnItemService, IProductService productService, IGrnItemStateService grnItemStateService)
     {
         public Task<GrnResponseDto> CreateGrn(GrnRequestDto grnRequestDto)
         {
@@ -16,22 +17,33 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 
         public async Task<GrnItemResponseDto> CreateGrnItemForExistingGrnByCodeAsync(string grncode, GrnItemRequestDto grnItemRequestDto)
         {
-            var grn = await grnService.GetByCodeAsync(grncode);
+            using var transaction = await context.Database.BeginTransactionAsync();
 
-            if (grn == null) 
-                throw new KeyNotFoundException($"Grn {grncode} non existing");
-            else if (grn.State == State.CLOSED)
-                throw new Exception($"Grn {grncode} in closed state");
+            try
+            {
+                var grn = await grnService.GetByCodeAsync(grncode);
 
-            var prodToAdd = await productService.GetByCodeAsync(grnItemRequestDto.ProductCode) ?? throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
+                if (grn == null)
+                    throw new KeyNotFoundException($"Grn {grncode} non existing");
+                else if (grn.State == State.CLOSED)
+                    throw new Exception($"Grn {grncode} in closed state");
 
-            grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
+                var prodToAdd = await productService.GetByCodeAsync(grnItemRequestDto.ProductCode) ?? throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
 
-            grnItemRequestDto.GrnId = grn.Id;
-            var created = await grnItemService.CreateAsync(grnItemRequestDto);
+                grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
 
-            await grnItemStateService.EvaluateAndProgressGrnItemStateAsync(created);
-            return created;
+                grnItemRequestDto.GrnId = grn.Id;
+                var created = await grnItemService.CreateAsync(grnItemRequestDto);
+
+                await grnItemStateService.EvaluateAndProgressGrnItemStateAsync(created);
+                await transaction.CommitAsync();
+                return created;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public Task<Page<GrnResponseDto>> GetAllGrnsAsync(QueryObject query)
