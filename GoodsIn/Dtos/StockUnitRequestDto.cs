@@ -16,9 +16,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Dtos
         [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
-        [Required]
-        [MinLength(3)]
-        public string ProductCode { get; set; }
+        public string? ProductCode { get; set; }
         public Category Category { get; set; }
     }
 }
