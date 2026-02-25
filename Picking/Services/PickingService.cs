@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
@@ -31,10 +32,10 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
                     );
                 if (stockUnitQuantities == null || stockUnitQuantities.Count == 0)
                 {
-                    throw new Exception("No stock units provided for picking");
+                    throw new ArgumentException("No stock units provided for picking");
                 }
                 int toPick = stockUnitQuantities.Values.Sum();
-                if (toPick > picklistItem.Qty - picklistItem.PickedQty) throw new Exception("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
+                if (toPick > picklistItem.Qty - picklistItem.PickedQty) throw new DomainConflictException("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
 
 
                 int totalAfterPicking = picklistItem.PickedQty + toPick;
@@ -54,13 +55,13 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
                     }
                     else
                     {
-                        throw new Exception($"Error reason is required when total picked qty ({totalAfterPicking}) is lower than requested qty ({picklistItem.Qty})");
+                        throw new ArgumentException($"Error reason is required when total picked qty ({totalAfterPicking}) is lower than requested qty ({picklistItem.Qty})");
                     }
                 }
                 // Caso C: Più del richiesto (già gestito sopra, ma per sicurezza)
                 else
                 {
-                    throw new Exception("Cannot pick more than requested quantity");
+                    throw new DomainConflictException("Cannot pick more than requested quantity");
                 }
 
                 Dictionary<string, StockUnitResponseDto> StockUnitsByCode = [];
@@ -90,7 +91,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
             if (item.State != PicklistItemState.OPEN)
             {
-                throw new Exception("PickListItem is not OPEN: " + item.State);
+                throw new DomainConflictException("PickListItem is not OPEN: " + item.State);
             }
 
             return item;
@@ -110,7 +111,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
                 if (!su.ProductCode.Equals(picklistItem.ProductCode, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new Exception(
+                    throw new DomainConflictException(
                         $"StockUnit {code} contains product {su.ProductCode} " +
                         $"but PickListItem requires product {picklistItem.ProductCode}"
                     );
@@ -118,7 +119,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
                 if (quantity > su.Quantity)
                 {
-                    throw new Exception(
+                    throw new DomainConflictException(
                         $"Requested quantity {quantity} > available quantity {su.Quantity} for stock unit: {code}"
                     );
                 }
