@@ -12,7 +12,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 {
     public class PickingService(ApplicationDBContext context, IPicklistService picklistService, IPicklistItemService picklistItemService, IPickingInfoService pickingInfoService, IStockUnitService stockUnitService)
     {
-        public async Task<PicklistItemDto> GetNextPickListItem(NextItemRequest nextItemRequest) => await picklistService.GetNextPickListItemAsync(nextItemRequest);
+        public async Task<PicklistItemDto?> GetNextPickListItem(NextItemRequest nextItemRequest) => await picklistService.GetNextPickListItemAsync(nextItemRequest);
 
         public async Task ConfirmPickingAsync(ConfirmPickingRequest request)
         {
@@ -20,7 +20,8 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
             try
             {
-                var picklistDto = await picklistService.GetByCodeAsync(request.PickListCode);
+                var picklistDto = await picklistService.GetByCodeAsync(request.PickListCode)
+                    ?? throw new KeyNotFoundException($"Picklist {request.PickListCode} not found");
                 PicklistItemDto picklistItem = await LoadPickListItem(picklistDto, request.PickListItemCode);
                 Dictionary<string, int> stockUnitQuantities = request.stockUnitQuantities
                     .GroupBy(x => x.SuId)
@@ -71,8 +72,8 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
                 CanPickFromSU(stockUnitQuantities, StockUnitsByCode, picklistItem);
 
-                await ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem);
-                await UpdatePicklistItem(picklistDto, picklistItem, toPick, errorReason);
+                await ExecutePicking(stockUnitQuantities, StockUnitsByCode, picklistItem, request.User);
+                await UpdatePicklistItem(picklistDto.Code, picklistItem, toPick, errorReason);
                 await transaction.CommitAsync();
             }
             catch
@@ -84,7 +85,8 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
         private async Task<PicklistItemDto> LoadPickListItem(PicklistDto picklistDto, string pickListItemCode)
         {
-            var item = picklistDto.pickListItemList.FirstOrDefault(i => i.Code == pickListItemCode);
+            var item = picklistDto.pickListItemList.FirstOrDefault(i => i.Code == pickListItemCode)
+                ?? throw new KeyNotFoundException($"Picklist item {pickListItemCode} not found");
 
             if (item.State != PicklistItemState.OPEN)
             {
@@ -123,21 +125,24 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             }
         }
         
-        private async Task UpdatePicklistItem(PicklistDto picklistDto, PicklistItemDto picklistItem, int totalPickedQty, ErrorReason errorReason)
+        private async Task UpdatePicklistItem(string picklistCode, PicklistItemDto picklistItem, int totalPickedQty, ErrorReason errorReason)
         {
             int pickedQty = picklistItem.PickedQty + totalPickedQty;
             picklistItem.PickedQty = pickedQty;
             if (pickedQty == picklistItem.Qty)
             {
                 picklistItem.State = PicklistItemState.PICKED;
-                await UpdatePicklist(picklistDto);
+                await UpdatePicklist(picklistCode);
             }
             picklistItem.ErrorReason = errorReason;
             await picklistItemService.UpdateAsync(picklistItem.Code, picklistItem);
         }
 
-        private async Task UpdatePicklist(PicklistDto picklistDto)
+        private async Task UpdatePicklist(string picklistCode)
         {
+            var picklistDto = await picklistService.GetByCodeAsync(picklistCode)
+                ?? throw new KeyNotFoundException($"Picklist {picklistCode} not found");
+
             foreach (var item in picklistDto.pickListItemList)
             {
                 if (item.State == PicklistItemState.OPEN)
@@ -149,7 +154,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             await picklistService.UpdateAsync(picklistDto);
         }
 
-        private async Task ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem)
+        private async Task ExecutePicking(Dictionary<string, int> requested, Dictionary<string, StockUnitResponseDto> stockUnitsByCode, PicklistItemDto picklistItem, string requestUser)
         {
             foreach (var entry in requested)
             {
@@ -161,15 +166,15 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
                 su.Quantity = oldQty - quantityToPick;
                 await stockUnitService.UpdateAsync(su);
 
-                await CreatePickingInfo(su, quantityToPick, picklistItem);
+                await CreatePickingInfo(su, quantityToPick, picklistItem, requestUser);
             }
         }
 
-        private async Task CreatePickingInfo(StockUnitResponseDto su, int pickedQty, PicklistItemDto picklistItem)
+        private async Task CreatePickingInfo(StockUnitResponseDto su, int pickedQty, PicklistItemDto picklistItem, string requestUser)
         {
             PickingInfoDto pickingInfo = new()
             {
-                User = "USR-01QWERTY",
+                User = requestUser,
                 Timestamp = DateTime.Now,
                 Quantity = pickedQty,
                 StockUnitCode = su.Code,

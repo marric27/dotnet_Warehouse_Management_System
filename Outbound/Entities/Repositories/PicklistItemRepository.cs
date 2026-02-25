@@ -10,7 +10,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
         public async Task<PicklistItem?> FindItemsByStateOrdered(List<long> plIds, PicklistItemState state)
         {
             return await context.PicklistItems
-                .Where(pli => plIds.Contains(pli.PicklistId) && pli.State == PicklistItemState.OPEN)
+                .Where(pli => plIds.Contains(pli.PicklistId) && pli.State == state)
                 .OrderBy(pli => pli.PickingSequence)
                 .ThenBy(pli => pli.SlotCode)
                 .FirstOrDefaultAsync();

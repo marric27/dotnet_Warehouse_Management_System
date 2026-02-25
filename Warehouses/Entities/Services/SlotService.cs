@@ -46,6 +46,12 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
         public async Task<SlotResponseDto?> UpdateAsync(string code, SlotRequestDto slotDto)
         {
             var existingSlot = await slotRepository.GetByCodeAsync(code, true);
+            if (existingSlot == null) return null;
+
+            existingSlot.PickingSequence = slotDto.PickingSequence;
+            existingSlot.Category = slotDto.Category;
+            existingSlot.Capacity = slotDto.Capacity;
+
             await slotRepository.UpdateAsync();
             return existingSlot.ToResponseDto();
         }

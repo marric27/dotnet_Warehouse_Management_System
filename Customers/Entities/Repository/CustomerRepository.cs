@@ -18,7 +18,7 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Repository
         public async Task<Customer?> DeleteAsync(string code)
         {
             var cust = await context.Customers.FirstOrDefaultAsync(x => x.Code == code);
-            if (cust != null)
+            if (cust == null)
             {
                 return null;
             }
