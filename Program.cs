@@ -1,6 +1,7 @@
 using dotnet_Warehouse_Management_System.Customers.Entities.Repository;
 using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Data;
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.GoodsIn;
 using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
@@ -18,6 +19,8 @@ using dotnet_Warehouse_Management_System.Picking.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -94,6 +97,35 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowAngularDev");
+app.UseExceptionHandler(exceptionHandlerApp =>
+{
+    exceptionHandlerApp.Run(async context =>
+    {
+        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
+        var exception = exceptionFeature?.Error;
+
+        var (status, title) = exception switch
+        {
+            KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
+            ArgumentException => (StatusCodes.Status400BadRequest, "Invalid request"),
+            DomainException => (StatusCodes.Status409Conflict, "Domain conflict"),
+            _ => (StatusCodes.Status500InternalServerError, "Unexpected error")
+        };
+
+        var problemDetails = new ProblemDetails
+        {
+            Type = $"https://httpstatuses.com/{status}",
+            Title = title,
+            Status = status,
+            Detail = exception?.Message ?? "An unexpected error occurred."
+        };
+        problemDetails.Extensions["traceId"] = context.TraceIdentifier;
+
+        context.Response.StatusCode = status;
+        context.Response.ContentType = "application/problem+json";
+        await context.Response.WriteAsJsonAsync(problemDetails);
+    });
+});
 app.UseAuthorization();
 
 app.MapControllers();

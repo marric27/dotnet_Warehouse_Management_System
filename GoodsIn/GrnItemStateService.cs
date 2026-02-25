@@ -1,8 +1,8 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
-using Microsoft.Extensions.Logging;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn
 {
@@ -58,13 +58,13 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
             else item.State = State.OPEN;
 
             if (expected <= 0)
-                throw new Exception("Expected qty must be > 0");
+                throw new ArgumentException("Expected qty must be > 0");
 
             if (received != compliant + notCompliant)
-                throw new Exception("Received != compliant + notCompliant");
+                throw new ArgumentException("Received != compliant + notCompliant");
 
             if (received > expected)
-                throw new Exception("Over-received: expected=" + expected + " received=" + received);
+                throw new DomainConflictException("Over-received: expected=" + expected + " received=" + received);
         }
     }
 }

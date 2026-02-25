@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
@@ -26,9 +27,9 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
                 if (grn == null)
                     throw new KeyNotFoundException($"Grn {grncode} non existing");
                 else if (grn.State == State.CLOSED)
-                    throw new Exception($"Grn {grncode} in closed state");
+                    throw new DomainConflictException($"Grn {grncode} in closed state");
 
-                var prodToAdd = await productService.GetByCodeAsync(grnItemRequestDto.ProductCode) ?? throw new Exception($"Grn {grnItemRequestDto.ProductCode} non existing");
+                _ = await productService.GetByCodeAsync(grnItemRequestDto.ProductCode) ?? throw new KeyNotFoundException($"Product {grnItemRequestDto.ProductCode} non existing");
 
                 grnItemStateService.ValidateItemQuantities(grnItemRequestDto);
 
