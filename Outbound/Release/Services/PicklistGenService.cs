@@ -19,6 +19,15 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 Dictionary<string, PicklistDto> pickListMap = [];
                 string _releaseNumber = $"PKL-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
 
+                var productCodes = ordersOpen
+                    .SelectMany(order => order.salesOrderLineList)
+                    .Select(line => line.productCode)
+                    .Where(code => !string.IsNullOrWhiteSpace(code))
+                    .Distinct()
+                    .ToList();
+
+                var slotsByProductCode = await slotService.GetBestSlotsForProducts(productCodes);
+
                 foreach (var order in ordersOpen)
                 {
                     if (!pickListMap.TryGetValue(order.customerCode, out PicklistDto pickListDto))
@@ -37,7 +46,9 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                     foreach (var line in order.salesOrderLineList)
                     {
                         string productCode = line.productCode;
-                        var slot = await slotService.GetSlotContainingProduct(productCode);
+                        var slot = slotsByProductCode.TryGetValue(productCode, out var slotDto)
+                            ? slotDto
+                            : throw new KeyNotFoundException($"No slot found containing product {productCode}");
                         PicklistItemDto itemDto = new()
                         {
                             Code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",

@@ -34,6 +34,34 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
                 .FirstOrDefaultAsync();
         }
 
+
+        public async Task<Dictionary<string, Slot>> GetBestSlotsForProductsAsync(IEnumerable<string> productCodes)
+        {
+            var normalizedCodes = productCodes
+                .Where(c => !string.IsNullOrWhiteSpace(c))
+                .Distinct()
+                .ToList();
+
+            if (normalizedCodes.Count == 0)
+            {
+                return [];
+            }
+
+            var slotCandidates = await context.Slots
+                .AsNoTracking()
+                .Where(s => s.StockUnits.Any(su => normalizedCodes.Contains(su.ProductCode)))
+                .SelectMany(s => s.StockUnits
+                    .Where(su => normalizedCodes.Contains(su.ProductCode))
+                    .Select(su => new { su.ProductCode, Slot = s }))
+                .ToListAsync();
+
+            return slotCandidates
+                .GroupBy(x => x.ProductCode)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderBy(x => x.Slot.PickingSequence).First().Slot);
+        }
+
         public override async Task<List<Slot>> GetAllAsync()
         {
             return await context.Slots.AsNoTracking().Include(s => s.StockUnits).ToListAsync();

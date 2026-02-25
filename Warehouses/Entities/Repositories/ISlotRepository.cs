@@ -10,5 +10,6 @@ namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories
         Task<Page<Slot>> GetAllPaginatedAsync(QueryObject query);
         Task<Slot?> GetByCodeAsync(string code, bool track);
         Task<Slot?> GetSlotContainingProductAsync(string productCode);
+        Task<Dictionary<string, Slot>> GetBestSlotsForProductsAsync(IEnumerable<string> productCodes);
     }
 }

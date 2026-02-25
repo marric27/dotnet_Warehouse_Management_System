@@ -67,5 +67,11 @@ namespace dotnet_Warehouse_Management_System.Products.Entities.Services
             var slot = await slotRepository.GetSlotContainingProductAsync(productCode) ?? throw new KeyNotFoundException("No slot found containing product");
             return slot?.ToResponseDto();
         }
+
+        public async Task<Dictionary<string, SlotResponseDto>> GetBestSlotsForProducts(IEnumerable<string> productCodes)
+        {
+            var slotsByProduct = await slotRepository.GetBestSlotsForProductsAsync(productCodes);
+            return slotsByProduct.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ToResponseDto());
+        }
     }
 }
