@@ -61,6 +61,9 @@ namespace dotnet_Warehouse_Management_System.Data
                 .WithOne(pi => pi.PicklistItem)
                 .HasForeignKey(pi => pi.PicklistItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PicklistItem>()
+                .HasIndex(pi => pi.code)
+                .IsUnique();
             modelBuilder.Entity<PickingInfo>()
                 .HasOne(p => p.PicklistItem)
                 .WithMany(p => p.PickingInfos)
@@ -71,6 +74,22 @@ namespace dotnet_Warehouse_Management_System.Data
                 .WithOne(ci => ci.GrnItem)
                 .HasForeignKey(ci => ci.GrnItemId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<Product>()
+                .HasIndex(p => p.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<StockUnit>()
+                .HasIndex(su => su.Code)
+                .IsUnique();
+
+            modelBuilder.Entity<CheckingInfo>()
+                .HasIndex(ci => ci.Code)
+                .IsUnique();
 
 
             //modelBuilder.Entity<Slot>()
