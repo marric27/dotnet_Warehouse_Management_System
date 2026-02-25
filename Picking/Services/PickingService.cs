@@ -30,39 +30,8 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
                         g => g.Key,
                         g => g.Sum(x => x.Quantity)
                     );
-                if (stockUnitQuantities == null || stockUnitQuantities.Count == 0)
-                {
-                    throw new ArgumentException("No stock units provided for picking");
-                }
-                int toPick = stockUnitQuantities.Values.Sum();
-                if (toPick > picklistItem.Qty - picklistItem.PickedQty) throw new DomainConflictException("Errore: Stai richiedendo quantità maggiore di quanto specificata nel pick list item");
 
-
-                int totalAfterPicking = picklistItem.PickedQty + toPick;
-                ErrorReason errorReason;
-
-                // Caso A: Abbiamo prelevato tutto quello che serviva
-                if (totalAfterPicking == picklistItem.Qty)
-                {
-                    errorReason = ErrorReason.NO_ERROR;
-                }
-                // Caso B: Abbiamo prelevato meno del totale richiesto
-                else if (totalAfterPicking < picklistItem.Qty)
-                {
-                    if (request.ErrorReason != null)
-                    {
-                        errorReason = request.ErrorReason.Value;
-                    }
-                    else
-                    {
-                        throw new ArgumentException($"Error reason is required when total picked qty ({totalAfterPicking}) is lower than requested qty ({picklistItem.Qty})");
-                    }
-                }
-                // Caso C: Più del richiesto (già gestito sopra, ma per sicurezza)
-                else
-                {
-                    throw new DomainConflictException("Cannot pick more than requested quantity");
-                }
+                (int toPick, ErrorReason errorReason) = ValidateConfirmPickingRules(request, picklistItem, stockUnitQuantities);
 
                 Dictionary<string, StockUnitResponseDto> StockUnitsByCode = [];
                 foreach (string code in stockUnitQuantities.Keys)
@@ -126,6 +95,49 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             }
         }
         
+
+        private static (int ToPick, ErrorReason ErrorReason) ValidateConfirmPickingRules(ConfirmPickingRequest request, PicklistItemDto picklistItem, Dictionary<string, int> stockUnitQuantities)
+        {
+            if (stockUnitQuantities.Count == 0)
+            {
+                throw new ArgumentException("No stock units were provided for picking.");
+            }
+
+            if (stockUnitQuantities.Any(x => string.IsNullOrWhiteSpace(x.Key)))
+            {
+                throw new ArgumentException("Every stock unit id must be provided.");
+            }
+
+            if (stockUnitQuantities.Any(x => x.Value <= 0))
+            {
+                throw new ArgumentException("Every stock unit quantity must be greater than zero.");
+            }
+
+            int toPick = stockUnitQuantities.Values.Sum();
+            if (toPick <= 0)
+            {
+                throw new ArgumentException("The sum of stock unit quantities must be greater than zero.");
+            }
+
+            int remainingQty = picklistItem.Qty - picklistItem.PickedQty;
+            if (toPick > remainingQty)
+            {
+                throw new ArgumentException($"Cannot pick {toPick} items: remaining quantity for the picklist item is {remainingQty}.");
+            }
+
+            int totalAfterPicking = picklistItem.PickedQty + toPick;
+            if (totalAfterPicking < picklistItem.Qty && request.ErrorReason is null)
+            {
+                throw new ArgumentException($"ErrorReason is required when picked quantity ({totalAfterPicking}) is lower than requested quantity ({picklistItem.Qty}).");
+            }
+
+            ErrorReason errorReason = totalAfterPicking == picklistItem.Qty
+                ? ErrorReason.NO_ERROR
+                : request.ErrorReason!.Value;
+
+            return (toPick, errorReason);
+        }
+
         private async Task UpdatePicklistItem(string picklistCode, PicklistItemDto picklistItem, int totalPickedQty, ErrorReason errorReason)
         {
             int pickedQty = picklistItem.PickedQty + totalPickedQty;

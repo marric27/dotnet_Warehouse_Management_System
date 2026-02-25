@@ -44,6 +44,27 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddOpenApi();
 
 builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(x => x.Value?.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value!.Errors
+                        .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage) ? "Invalid value." : e.ErrorMessage)
+                        .ToArray()
+                );
+
+            return new BadRequestObjectResult(new ValidationProblemDetails(errors)
+            {
+                Title = "Validation failed",
+                Status = StatusCodes.Status400BadRequest,
+                Detail = "One or more request fields are invalid. Check the errors property for details."
+            });
+        };
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;

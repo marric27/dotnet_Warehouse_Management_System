@@ -10,6 +10,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
     {
         public async Task<OrderResponseDto> CreateAsync(OrderRequestDto OrderDto)
         {
+            ValidateCreateOrderRequest(OrderDto);
+
             var order = OrderDto.ToEntity();
             order.GenerateCode();
             var created = await orderRepository.CreateAsync(order);
@@ -24,7 +26,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         public async Task<List<OrderResponseDto>> GetAllAsync()
         {
             var orders = await orderRepository.GetAllAsync();
-            return orders.Select(o => o.ToResponseDto()).ToList();  
+            return orders.Select(o => o.ToResponseDto()).ToList();
         }
 
         public async Task<Page<OrderResponseDto>> GetAllPaginatedAsync(QueryObject query)
@@ -53,5 +55,23 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             return existingOrder.ToResponseDto();
         }
 
+        private static void ValidateCreateOrderRequest(OrderRequestDto orderDto)
+        {
+            if (orderDto.SalesOrderLineList is null || orderDto.SalesOrderLineList.Count == 0)
+            {
+                throw new ArgumentException("At least one sales order line is required.");
+            }
+
+            int totalRequestedQty = orderDto.SalesOrderLineList.Sum(line => line.quantity);
+            if (totalRequestedQty <= 0)
+            {
+                throw new ArgumentException("The sum of all sales order line quantities must be greater than zero.");
+            }
+
+            if (orderDto.State != OrderState.OPEN)
+            {
+                throw new ArgumentException($"Invalid order state for creation: {orderDto.State}. Only OPEN is allowed.");
+            }
+        }
     }
 }

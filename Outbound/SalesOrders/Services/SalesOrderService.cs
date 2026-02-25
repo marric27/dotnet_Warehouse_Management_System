@@ -3,6 +3,7 @@ using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Customers.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Outbound.Dtos;
+using dotnet_Warehouse_Management_System.Outbound.Entities;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
 
 namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services
@@ -11,6 +12,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services
     {
         public async Task<OrderResponseDto> CreateOrderAndAssign(string customerCode, OrderRequestDto orderDto)
         {
+            ValidateCreateOrderInput(customerCode, orderDto);
+
             CustomerResponseDto customerResponseDto = await customerService.GetByCodeAsync(customerCode);
 
             // verifica che i prodotti ordinati esistano TODO
@@ -18,7 +21,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services
             {
                 CustomerCode = customerCode,
                 Date = DateTime.UtcNow,
-                State = Entities.OrderState.OPEN,
+                State = OrderState.OPEN,
                 SalesOrderLineList = orderDto.SalesOrderLineList
             };
 
@@ -40,6 +43,24 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services
         public async Task<List<OrderResponseDto>> GetAll()
         {
             return await orderService.GetAllAsync();
+        }
+
+        private static void ValidateCreateOrderInput(string customerCode, OrderRequestDto orderDto)
+        {
+            if (string.IsNullOrWhiteSpace(customerCode))
+            {
+                throw new ArgumentException("Customer code is required.");
+            }
+
+            if (orderDto.SalesOrderLineList is null || orderDto.SalesOrderLineList.Count == 0)
+            {
+                throw new ArgumentException("Cannot create an order without sales order lines.");
+            }
+
+            if (orderDto.SalesOrderLineList.Any(line => line.quantity <= 0))
+            {
+                throw new ArgumentException("Every sales order line quantity must be greater than zero.");
+            }
         }
     }
 }
