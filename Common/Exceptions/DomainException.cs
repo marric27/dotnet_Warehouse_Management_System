@@ -1,6 +1,9 @@
 namespace dotnet_Warehouse_Management_System.Common.Exceptions
 {
-    public class DomainException(string message) : Exception(message)
+    public abstract class DomainException : Exception
     {
+        protected DomainException(string message) : base(message)
+        {
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
@@ -17,15 +18,15 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
             {
                 // 1. Recupero dati iniziale
                 var grnItem = await grnItemService.GetByCodeAsync(grnItemCode)
-                          ?? throw new Exception($"GrnItem {grnItemCode} not found");
+                          ?? throw new KeyNotFoundException($"GrnItem {grnItemCode} not found");
 
                 // 2. Validazioni business
                 if (grnItem.State == State.CHECKED || grnItem.State == State.PUTAWAY)
-                    throw new Exception("State is already Closed or Putaway");
+                    throw new DomainConflictException("State is already Closed or Putaway");
 
                 var alreadyStockedQty = grnItem.CheckingInfoList.Sum(ci => ci.Quantity);
                 if (su.Quantity > (grnItem.ReceivedQty - alreadyStockedQty))
-                    throw new Exception("Requested quantity exceeds available quantity");
+                    throw new DomainConflictException("Requested quantity exceeds available quantity");
 
                 // 3. Preparazione StockUnit
                 var product = await productService.GetByCodeAsync(grnItem.ProductCode);

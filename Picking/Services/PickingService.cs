@@ -1,4 +1,5 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
@@ -59,7 +60,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
             if (item.State != PicklistItemState.OPEN)
             {
-                throw new Exception("PickListItem is not OPEN: " + item.State);
+                throw new DomainConflictException("PickListItem is not OPEN: " + item.State);
             }
 
             return item;
@@ -79,7 +80,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
                 if (!su.ProductCode.Equals(picklistItem.ProductCode, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new Exception(
+                    throw new DomainConflictException(
                         $"StockUnit {code} contains product {su.ProductCode} " +
                         $"but PickListItem requires product {picklistItem.ProductCode}"
                     );
@@ -87,7 +88,7 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
 
                 if (quantity > su.Quantity)
                 {
-                    throw new Exception(
+                    throw new DomainConflictException(
                         $"Requested quantity {quantity} > available quantity {su.Quantity} for stock unit: {code}"
                     );
                 }
