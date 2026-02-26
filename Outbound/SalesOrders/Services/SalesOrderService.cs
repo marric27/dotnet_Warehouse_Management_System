@@ -14,7 +14,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.SalesOrders.Services
         {
             ValidateCreateOrderInput(customerCode, orderDto);
 
-            CustomerResponseDto customerResponseDto = await customerService.GetByCodeAsync(customerCode);
+            CustomerResponseDto customerResponseDto = await customerService.GetByCodeAsync(customerCode) ?? throw new ArgumentException($"Customer with code {customerCode} not found.");
 
             // verifica che i prodotti ordinati esistano TODO
             OrderRequestDto order = new()

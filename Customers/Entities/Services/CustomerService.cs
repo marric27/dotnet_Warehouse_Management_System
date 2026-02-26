@@ -6,31 +6,26 @@ using dotnet_Warehouse_Management_System.Customers.Entities.Repository;
 
 namespace dotnet_Warehouse_Management_System.Customers.Entities.Services
 {
-    public class CustomerService : ICustomerService
+    public class CustomerService(ICustomerRepository customerRepository) : ICustomerService
     {
-        private readonly ICustomerRepository _customerRepository;
-        public CustomerService(ICustomerRepository customerRepository)
-        {
-            _customerRepository = customerRepository;
-        }
         public async Task<CustomerResponseDto> CreateAsync(CustomerRequestDto CustomerDto)
         {
             var customer = CustomerDto.ToCustomer();
             customer.GenerateCode();
 
-            var created = await _customerRepository.CreateAsync(customer);
+            var created = await customerRepository.CreateAsync(customer);
             return created.ToResponseDto();
         }
 
         public async Task<CustomerResponseDto?> DeleteAsync(string code)
         {
-            var deleted = await _customerRepository.DeleteAsync(code);
+            var deleted = await customerRepository.DeleteAsync(code);
             return deleted?.ToResponseDto();
         }
 
         public async Task<Page<CustomerResponseDto>> GetAllPaginatedAsync(QueryObject query)
         {
-            var customers = await _customerRepository.GetAllPaginatedAsync(query);
+            var customers = await customerRepository.GetAllPaginatedAsync(query);
 
             var pagedDto = new Page<CustomerResponseDto>
             {
@@ -44,19 +39,19 @@ namespace dotnet_Warehouse_Management_System.Customers.Entities.Services
 
         public async Task<List<CustomerResponseDto>> GetAllAsync()
         {
-            var customers = await _customerRepository.GetAllAsync();
+            var customers = await customerRepository.GetAllAsync();
             return customers.Select(c => c.ToResponseDto()).ToList();
         }
 
         public async Task<CustomerResponseDto?> GetByCodeAsync(string code)
         {
-            var cust = await _customerRepository.GetByCodeAsync(code);
+            var cust = await customerRepository.GetByCodeAsync(code) ?? throw new KeyNotFoundException("Customer not found");
             return cust?.ToResponseDto();
         }
 
         public async Task<CustomerResponseDto?> UpdateAsync(string code, CustomerRequestDto CustomerDto)
         {
-            var updated = await _customerRepository.UpdateAsync(code, CustomerDto);
+            var updated = await customerRepository.UpdateAsync(code, CustomerDto);
             return updated?.ToResponseDto();
         }
     }

@@ -37,7 +37,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
 
         public async Task<OrderResponseDto?> GetByCodeAsync(string code)
         {
-            var order = await orderRepository.GetByCodeAsync(code, false);
+            var order = await orderRepository.GetByCodeAsync(code, false) ?? throw new KeyNotFoundException("Order not found.");
             return order?.ToResponseDto();
         }
 
