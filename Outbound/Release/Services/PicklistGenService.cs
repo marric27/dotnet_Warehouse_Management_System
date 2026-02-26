@@ -83,14 +83,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                     .ExecuteUpdateAsync(s =>
                         s.SetProperty(o => o.State, OrderState.PICKING));
 
-                // 4️⃣ Insert picklists
-                List<PicklistDto> result = [];
-
-                foreach (var picklist in pickListMap.Values)
-                {
-                    var picklistEntity = await picklistService.CreateAsync(picklist);
-                    result.Add(picklistEntity);
-                }
+                // 4️⃣ Insert picklists in batch
+                var result = await picklistService.CreateBulkAsync(pickListMap.Values.ToList());
 
                 await transaction.CommitAsync();
                 return result;

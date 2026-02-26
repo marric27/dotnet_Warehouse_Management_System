@@ -19,6 +19,19 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             return created.ToResponseDto();
         }
 
+        public async Task<List<PicklistDto>> CreateBulkAsync(List<PicklistDto> picklists)
+        {
+            var picklistEntities = picklists.Select(p =>
+            {
+                var picklist = p.ToEntity();
+                picklist.State = PicklistState.OPEN;
+                return picklist;
+            }).ToList();
+
+            var created = await picklistRepository.CreateRangeAsync(picklistEntities);
+            return created.Select(p => p.ToResponseDto()).ToList();
+        }
+
         public async Task<List<PicklistDto>> GetAllAsync()
         {
             var pls = await picklistRepository.GetAllAsync();
