@@ -19,7 +19,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
         {
             var query = context.PicklistItems.AsQueryable();
             if (!track) query = query.AsNoTracking();
-            return await query.FirstOrDefaultAsync(p => p.code == code);
+            return await query.FirstOrDefaultAsync(p => p.Code == code);
         }
     }
 }

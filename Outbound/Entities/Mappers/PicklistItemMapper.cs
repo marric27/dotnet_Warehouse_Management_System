@@ -13,10 +13,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.Mappers
             return new PicklistItemDto
             {
                 Id = entity.Id,
-                Code = entity.code,
+                Code = entity.Code,
                 ProductCode = entity.ProductCode,
                 State = entity.State,
-                Qty = entity.qty,
+                Qty = entity.Qty,
                 PickedQty = entity.PickedQty,
                 PickingSequence = entity.PickingSequence,
                 ErrorReason = entity.ErrorReason,
@@ -33,10 +33,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.Mappers
 
             return new PicklistItem
             {
-                code = dto.Code,
+                Code = dto.Code,
                 ProductCode = dto.ProductCode,
                 State = dto.State,
-                qty = dto.Qty,
+                Qty = dto.Qty,
                 PickedQty = dto.PickedQty,
                 PickingSequence = dto.PickingSequence,
                 ErrorReason = dto.ErrorReason,
