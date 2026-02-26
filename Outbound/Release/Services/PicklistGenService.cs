@@ -16,9 +16,11 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
         public async Task<List<PicklistDto>> GeneratePicklists(List<long> orderIds)
         {
             // 1️⃣ Lettura fuori transazione
-            List<OrderResponseDto> ordersOpen = await orderService.GetByStateAndIdsAsync(OrderState.OPEN, orderIds);
+            List<OrderResponseDto> ordersOpen =
+                await orderService.GetByStateAndIdsAsync(OrderState.OPEN, orderIds);
 
-            if (!ordersOpen.Any()) return [];
+            if (!ordersOpen.Any())
+                return [];
 
             Dictionary<string, PicklistDto> pickListMap = [];
             string releaseNumber = $"PKL-{Guid.NewGuid():N}".Substring(0, 12).ToUpper();
@@ -78,7 +80,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 // 3️⃣ BULK UPDATE
                 await context.Orders
                     .Where(o => idsToUpdate.Contains(o.Id))
-                    .ExecuteUpdateAsync(s => s.SetProperty(o => o.State, OrderState.PICKING));
+                    .ExecuteUpdateAsync(s =>
+                        s.SetProperty(o => o.State, OrderState.PICKING));
 
                 // 4️⃣ Insert picklists
                 List<PicklistDto> result = [];
