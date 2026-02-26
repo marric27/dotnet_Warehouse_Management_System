@@ -19,6 +19,13 @@ namespace dotnet_Warehouse_Management_System.BaseRepository
             return entity;
         }
 
+        public async Task<List<T>> CreateRangeAsync(List<T> entities)
+        {
+            await context.Set<T>().AddRangeAsync(entities);
+            await context.SaveChangesAsync();
+            return entities;
+        }
+
         public async Task UpdateAsync() => await context.SaveChangesAsync();
 
         public async Task DeleteAsync(T entity)
