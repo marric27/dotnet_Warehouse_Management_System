@@ -19,6 +19,13 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Controllers
             return Created("", picklists);
         }
 
+        [HttpPost("batch")]
+        public async Task<IActionResult> CreateBulk([FromBody] List<PicklistDto> picklists)
+        {
+            var createdPicklists = await picklistService.CreateBulkAsync(picklists);
+            return Created("", createdPicklists);
+        }
+
         [HttpGet]
         [Route("code/{code}")]
         public async Task<IActionResult> GetByCode([FromRoute] string code)

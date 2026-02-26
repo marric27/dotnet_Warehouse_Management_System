@@ -11,7 +11,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
             var existing = await picklistItemRepository.GetByCodeAsync(code, true) ?? throw new KeyNotFoundException();
             existing.State = dto.State;
             existing.ErrorReason = dto.ErrorReason;
-            existing.qty = dto.Qty;
+            existing.Qty = dto.Qty;
             existing.PickedQty = dto.PickedQty;
             await picklistItemRepository.UpdateAsync();
             return existing?.ToResponseDto();

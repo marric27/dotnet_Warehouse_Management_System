@@ -3,78 +3,89 @@ using dotnet_Warehouse_Management_System.Outbound.Dtos;
 using dotnet_Warehouse_Management_System.Outbound.Entities;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 {
-    public class PicklistGenService(ApplicationDBContext context, IOrderService orderService, ISlotService slotService, IPicklistService picklistService)
+    public class PicklistGenService(
+        ApplicationDBContext context,
+        IOrderService orderService,
+        ISlotService slotService,
+        IPicklistService picklistService)
     {
-        public async Task<List<PicklistDto>> GeneratePicklists(List<long> OrderIds)
+        public async Task<List<PicklistDto>> GeneratePicklists(List<long> orderIds)
         {
+            // 1️⃣ Lettura fuori transazione
+            List<OrderResponseDto> ordersOpen =
+                await orderService.GetByStateAndIdsAsync(OrderState.OPEN, orderIds);
+
+            if (!ordersOpen.Any())
+                return [];
+
+            Dictionary<string, PicklistDto> pickListMap = [];
+            string releaseNumber = $"PKL-{Guid.NewGuid():N}".Substring(0, 12).ToUpper();
+
+            var productCodes = ordersOpen
+                .SelectMany(o => o.salesOrderLineList)
+                .Select(l => l.productCode)
+                .Where(code => !string.IsNullOrWhiteSpace(code))
+                .Distinct()
+                .ToList();
+
+            var slotsByProductCode =
+                await slotService.GetBestSlotsForProducts(productCodes);
+
+            // 2️⃣ Costruzione picklist (CPU-bound, no DB)
+            foreach (var order in ordersOpen)
+            {
+                if (!pickListMap.TryGetValue(order.customerCode, out var pickListDto))
+                {
+                    pickListDto = new PicklistDto
+                    {
+                        Code = $"PL-{Guid.NewGuid():N}".Substring(0, 12).ToUpper(),
+                        CustomerCode = order.customerCode,
+                        ReleaseNumber = releaseNumber,
+                        pickListItemList = []
+                    };
+                    pickListMap[order.customerCode] = pickListDto;
+                }
+
+                foreach (var line in order.salesOrderLineList)
+                {
+                    var slot = slotsByProductCode.TryGetValue(line.productCode, out var s)
+                        ? s
+                        : throw new KeyNotFoundException($"No slot for product {line.productCode}");
+
+                    pickListDto.pickListItemList.Add(new PicklistItemDto
+                    {
+                        Code = $"IT-{Guid.NewGuid():N}".Substring(0, 12).ToUpper(),
+                        ProductCode = line.productCode,
+                        State = Common.PicklistItemState.OPEN,
+                        Qty = line.quantity,
+                        PickedQty = 0,
+                        PickingSequence = slot.PickingSequence,
+                        SlotCode = slot.Code,
+                        SalesOrderCode = order.code,
+                        SalesOrderLineNumber = line.salesOrderLineNumber
+                    });
+                }
+            }
+
+            var idsToUpdate = ordersOpen.Select(o => o.id).ToList();
+
             using var transaction = await context.Database.BeginTransactionAsync();
 
             try
             {
-                List<OrderResponseDto> ordersOpen = await orderService.GetByStateAndIdsAsync(OrderState.OPEN, OrderIds);
+                // 3️⃣ BULK UPDATE
+                await context.Orders
+                    .Where(o => idsToUpdate.Contains(o.Id))
+                    .ExecuteUpdateAsync(s =>
+                        s.SetProperty(o => o.State, OrderState.PICKING));
 
-                Dictionary<string, PicklistDto> pickListMap = [];
-                string _releaseNumber = $"PKL-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}";
+                // 4️⃣ Insert picklists in batch
+                var result = await picklistService.CreateBulkAsync(pickListMap.Values.ToList());
 
-                var productCodes = ordersOpen
-                    .SelectMany(order => order.salesOrderLineList)
-                    .Select(line => line.productCode)
-                    .Where(code => !string.IsNullOrWhiteSpace(code))
-                    .Distinct()
-                    .ToList();
-
-                var slotsByProductCode = await slotService.GetBestSlotsForProducts(productCodes);
-
-                foreach (var order in ordersOpen)
-                {
-                    if (!pickListMap.TryGetValue(order.customerCode, out PicklistDto pickListDto))
-                    {
-                        pickListDto = new PicklistDto
-                        {
-                            Code = $"PL-{Guid.NewGuid().ToString()[..8].ToUpper()}",
-                            CustomerCode = order.customerCode,
-                            ReleaseNumber = _releaseNumber,
-                            pickListItemList = []
-                        };
-
-                        pickListMap[order.customerCode] = pickListDto;
-                    }
-
-                    foreach (var line in order.salesOrderLineList)
-                    {
-                        string productCode = line.productCode;
-                        var slot = slotsByProductCode.TryGetValue(productCode, out var slotDto)
-                            ? slotDto
-                            : throw new KeyNotFoundException($"No slot found containing product {productCode}");
-                        PicklistItemDto itemDto = new()
-                        {
-                            Code = $"Item-{Guid.NewGuid().ToString()[..8].ToUpper()}",
-                            ProductCode = productCode,
-                            State = Common.PicklistItemState.OPEN,
-                            Qty = line.quantity,
-                            PickedQty = 0,
-                            PickingSequence = slot.PickingSequence,
-                            SlotCode = slot.Code,
-                            SalesOrderCode = order.code,
-                            SalesOrderLineNumber = line.salesOrderLineNumber
-                        };
-
-                        pickListDto.pickListItemList.Add(itemDto);
-                    }
-                    order.state = OrderState.PICKING;
-                    await orderService.UpdateAsync(order);
-                }
-
-                List<PicklistDto> result = [];
-
-                foreach (var picklist in pickListMap.Values)
-                {
-                    var picklistEntity = await picklistService.CreateAsync(picklist);
-                    result.Add(picklistEntity);
-                }
                 await transaction.CommitAsync();
                 return result;
             }
@@ -84,6 +95,5 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 throw;
             }
         }
-
     }
 }

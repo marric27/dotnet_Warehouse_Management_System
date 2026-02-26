@@ -8,5 +8,6 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
     {
         Task<Page<Picklist>> GetAllPaginatedAsync(QueryObject query);
         Task<Picklist?> GetByCodeAsync(string code, bool track);
+        Task<List<Picklist>> CreateRangeAsync(List<Picklist> picklists);
     }
 }

@@ -15,6 +15,6 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Services
         Task<PicklistItemDto?> GetNextPickListItemAsync(NextItemRequest request);
         Task<PicklistDto?> UpdateAsync(PicklistDto picklistDto);
 
-
+        Task<List<PicklistDto>> CreateBulkAsync(List<PicklistDto> picklists);
     }
 }

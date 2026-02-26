@@ -22,6 +22,11 @@ namespace dotnet_Warehouse_Management_System.Outbound.Entities.Repositories
                 .ToPagedListAsync(query.PageNumber, query.PageSize);
         }
 
+        public async Task<List<Picklist>> CreateRangeAsync(List<Picklist> picklists)
+        {
+            return await base.CreateRangeAsync(picklists);
+        }
+
         public async Task<Picklist?> GetByCodeAsync(string code, bool track)
         {
             var query = context.Picklists.AsQueryable();
