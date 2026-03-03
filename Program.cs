@@ -22,6 +22,8 @@ using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Serilog;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -32,6 +34,23 @@ builder.Host.UseSerilog((context, config) =>
 {
     config.ReadFrom.Configuration(context.Configuration);
 });
+
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter(); // per Tempo
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddPrometheusExporter();
+    });
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -156,6 +175,7 @@ app.UseExceptionHandler(exceptionHandlerApp =>
 app.UseAuthorization();
 
 app.UseSerilogRequestLogging(); // log automatico delle request HTTP
+app.MapPrometheusScrapingEndpoint();
 
 app.MapControllers();
 
