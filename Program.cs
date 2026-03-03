@@ -1,7 +1,7 @@
+using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Customers.Entities.Repository;
 using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.GoodsIn;
 using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
@@ -22,10 +22,16 @@ using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+{
+    config.ReadFrom.Configuration(context.Configuration);
+});
 
 // Add services to the container.
 builder.Services.AddCors(options =>
@@ -148,6 +154,8 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 app.UseAuthorization();
+
+app.UseSerilogRequestLogging(); // log automatico delle request HTTP
 
 app.MapControllers();
 

@@ -13,7 +13,6 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [HttpGet]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
-
             var products = await productService.GetAllPaginatedAsync(query);
             return Ok(products);
         }
@@ -22,7 +21,6 @@ namespace dotnet_Warehouse_Management_System.Products.Controller
         [Route("all")]
         public async Task<IActionResult> GetAll()
         {
-
             var products = await productService.GetAllAsync();
             return Ok(products);
         }

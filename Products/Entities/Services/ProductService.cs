@@ -6,10 +6,11 @@ using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 
 namespace dotnet_Warehouse_Management_System.Products.Entities.Services
 {
-    public class ProductService(IProductRepository productRepository) : IProductService
+    public class ProductService(IProductRepository productRepository, ILogger<ProductService> logger) : IProductService
     {
         public async Task<List<ProductResponseDto>> GetAllAsync()
         {
+            logger.LogInformation("Getting all products");
             var products = await productRepository.GetAllAsync();
             return products.Select(p => p.ToResponseDto()).ToList();
         }
