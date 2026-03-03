@@ -80,8 +80,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 // 3️⃣ BULK UPDATE
                 await context.Orders
                     .Where(o => idsToUpdate.Contains(o.Id))
-                    .ExecuteUpdateAsync(s =>
-                        s.SetProperty(o => o.State, OrderState.PICKING));
+                    .ExecuteUpdateAsync(s => s.SetProperty(o => o.State, OrderState.PICKING));
 
                 // 4️⃣ Insert picklists in batch
                 var result = await picklistService.CreateBulkAsync(pickListMap.Values.ToList());
