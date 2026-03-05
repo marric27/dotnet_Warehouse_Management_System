@@ -11,7 +11,8 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
         ApplicationDBContext context,
         IOrderService orderService,
         ISlotService slotService,
-        IPicklistService picklistService)
+        IPicklistService picklistService,
+        ILogger<PicklistGenService> logger)
     {
         public async Task<List<PicklistDto>> GeneratePicklists(List<long> orderIds)
         {
@@ -68,6 +69,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                         SalesOrderCode = order.code,
                         SalesOrderLineNumber = line.salesOrderLineNumber
                     });
+                    logger.LogInformation($"Added item {line.productCode} to picklist {pickListDto.Code}");
                 }
             }
 

@@ -78,6 +78,9 @@ namespace dotnet_Warehouse_Management_System.Data
             modelBuilder.Entity<Customer>()
                 .HasIndex(c => c.Code)
                 .IsUnique();
+            modelBuilder.Entity<Customer>()
+                .HasIndex(c => c.TaxCode)
+                .IsUnique();
 
             modelBuilder.Entity<Product>()
                 .HasIndex(p => p.Code)

@@ -132,6 +132,9 @@ builder.Services.AddScoped<ICheckingInfoService, CheckingInfoService>();
 builder.Services.AddScoped<CheckGoodsInService>();
 builder.Services.AddScoped<PutawayService>();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 
 var app = builder.Build();
 
@@ -143,35 +146,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseCors("AllowAngularDev");
-app.UseExceptionHandler(exceptionHandlerApp =>
-{
-    exceptionHandlerApp.Run(async context =>
-    {
-        var exceptionFeature = context.Features.Get<IExceptionHandlerFeature>();
-        var exception = exceptionFeature?.Error;
-
-        var (status, title) = exception switch
-        {
-            KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource not found"),
-            ArgumentException => (StatusCodes.Status400BadRequest, "Invalid request"),
-            DomainException => (StatusCodes.Status409Conflict, "Domain conflict"),
-            _ => (StatusCodes.Status500InternalServerError, "Unexpected error")
-        };
-
-        var problemDetails = new ProblemDetails
-        {
-            Type = $"https://httpstatuses.com/{status}",
-            Title = title,
-            Status = status,
-            Detail = exception?.Message ?? "An unexpected error occurred."
-        };
-        problemDetails.Extensions["traceId"] = context.TraceIdentifier;
-
-        context.Response.StatusCode = status;
-        context.Response.ContentType = "application/problem+json";
-        await context.Response.WriteAsJsonAsync(problemDetails);
-    });
-});
+app.UseExceptionHandler();
 app.UseAuthorization();
 
 app.UseSerilogRequestLogging(); // log automatico delle request HTTP
