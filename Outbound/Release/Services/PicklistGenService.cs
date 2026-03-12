@@ -17,13 +17,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
         public async Task<List<PicklistDto>> GeneratePicklists(List<long> orderIds)
         {
             // 1️⃣ Lettura fuori transazione
-            List<OrderResponseDto> ordersOpen =
-                await orderService.GetByStateAndIdsAsync(OrderState.OPEN, orderIds);
+            List<OrderResponseDto> ordersOpen = await orderService.GetByStateAndIdsAsync(OrderState.OPEN, orderIds);
 
             if (!ordersOpen.Any())
                 return [];
 
-            Dictionary<string, PicklistDto> pickListMap = [];
+            Dictionary<string, PicklistBuilder> pickListMap = [];
             string releaseNumber = $"PKL-{Guid.NewGuid():N}".Substring(0, 12).ToUpper();
 
             var productCodes = ordersOpen
@@ -33,45 +32,43 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 .Distinct()
                 .ToList();
 
-            var slotsByProductCode =
-                await slotService.GetBestSlotsForProducts(productCodes);
+            var slotsByProductCode = await slotService.GetBestSlotsForProducts(productCodes);
 
             // 2️⃣ Costruzione picklist (CPU-bound, no DB)
             foreach (var order in ordersOpen)
             {
-                if (!pickListMap.TryGetValue(order.customerCode, out var pickListDto))
+                if (!pickListMap.TryGetValue(order.customerCode, out var builder))
                 {
-                    pickListDto = new PicklistDto
-                    {
-                        Code = $"PL-{Guid.NewGuid():N}".Substring(0, 12).ToUpper(),
-                        CustomerCode = order.customerCode,
-                        ReleaseNumber = releaseNumber,
-                        pickListItemList = []
-                    };
-                    pickListMap[order.customerCode] = pickListDto;
+                    builder = new PicklistBuilder()
+                        .ForCustomer(order.customerCode)
+                        .WithReleaseNumber(releaseNumber);
+                    pickListMap[order.customerCode] = builder;
                 }
 
                 foreach (var line in order.salesOrderLineList)
                 {
-                    var slot = slotsByProductCode.TryGetValue(line.productCode, out var s)
-                        ? s
-                        : throw new KeyNotFoundException($"No slot for product {line.productCode}");
+                    if (!slotsByProductCode.TryGetValue(line.productCode, out var slot))
+                        throw new KeyNotFoundException($"No slot for product {line.productCode}");
 
-                    pickListDto.pickListItemList.Add(new PicklistItemDto
-                    {
-                        Code = $"IT-{Guid.NewGuid():N}".Substring(0, 12).ToUpper(),
-                        ProductCode = line.productCode,
-                        State = Common.PicklistItemState.OPEN,
-                        Qty = line.quantity,
-                        PickedQty = 0,
-                        PickingSequence = slot.PickingSequence,
-                        SlotCode = slot.Code,
-                        SalesOrderCode = order.code,
-                        SalesOrderLineNumber = line.salesOrderLineNumber
-                    });
-                    logger.LogInformation($"Added item {line.productCode} to picklist {pickListDto.Code}");
+                    var item = new PicklistItemBuilder()
+                                    .FromOrderLine(line, order.code)
+                                    .WithSlotInfo(slot)
+                                    .Build();
+
+                    builder.AddItem(item);
+                    logger.LogInformation(
+                        "Added item {ProductCode} to picklist for customer {Customer}",
+                        line.productCode,
+                        order.customerCode);
                 }
             }
+
+
+            // 4️⃣ Build dei PicklistDto
+            var picklists = pickListMap
+                .Values
+                .Select(b => b.Build())
+                .ToList();
 
             var idsToUpdate = ordersOpen.Select(o => o.id).ToList();
 
@@ -82,10 +79,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 // 3️⃣ BULK UPDATE
                 await context.Orders
                     .Where(o => idsToUpdate.Contains(o.Id))
-                    .ExecuteUpdateAsync(s => s.SetProperty(o => o.State, OrderState.PICKING));
+                    .ExecuteUpdateAsync(s =>
+                        s.SetProperty(o => o.State, OrderState.PICKING));
 
-                // 4️⃣ Insert picklists in batch
-                var result = await picklistService.CreateBulkAsync(pickListMap.Values.ToList());
+
+                // 5️⃣ Insert batch
+                var result = await picklistService.CreateBulkAsync(picklists);
 
                 await transaction.CommitAsync();
                 return result;
