@@ -1,7 +1,7 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.States;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn
@@ -27,8 +27,8 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
             {
                 item.State = nextState;
                 await grnItemService.UpdateAsync(item);
-                await EvaluateAndProgressGrnStateAsync(item.GrnId);
             }
+            await EvaluateAndProgressGrnStateAsync(item.GrnId);
         }
 
         public async Task EvaluateAndProgressGrnStateAsync(long grnId)
