@@ -1,34 +1,31 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
-using dotnet_Warehouse_Management_System.GoodsIn.Entities;
-using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.States;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn
 {
-    public class GrnItemStateService(IGrnService grnService, IGrnItemService grnItemService) : IGrnItemStateService
+    public class GrnItemStateService(IGrnService grnService, IGrnItemService grnItemService, IGrnItemStateHandlerResolver stateHandlerResolver) : IGrnItemStateService
     {
         public async Task EvaluateAndProgressGrnItemStateAsync(GrnItemResponseDto item)
         {
-            int received = item.ReceivedQty;
-            int assigned = item.CheckingInfoList?.Sum(ci => ci.Quantity) ?? 0;
-            State current = item.State == null ? State.OPEN : item.State;
+            State currentState = item.State;
+            IGrnItemStateHandler currentHandler = stateHandlerResolver.Resolve(currentState);
 
-            // Passaggio a CHECKED
-            if (current == State.OPEN && assigned >= received && received > 0)
+            State nextState = currentHandler.OnCheckingInfoAdded(item);
+            if (nextState != currentState && currentHandler.CanTransitionTo(nextState, item))
             {
-                item.State = State.CHECKED;
+                item.State = nextState;
                 await grnItemService.UpdateAsync(item);
-                current = State.CHECKED;
+                currentState = nextState;
             }
 
-            // Passaggio a PUTAWAY (se tutti i figli sono in stato PUTAWAY)
-            if (current == State.CHECKED &&
-                item.CheckingInfoList != null &&
-                item.CheckingInfoList.Any() &&
-                item.CheckingInfoList.All(c => c.State == State.PUTAWAY))
+            currentHandler = stateHandlerResolver.Resolve(currentState);
+            nextState = currentHandler.OnPutawayAssigned(item);
+            if (nextState != currentState && currentHandler.CanTransitionTo(nextState, item))
             {
-                item.State = State.PUTAWAY;
+                item.State = nextState;
                 await grnItemService.UpdateAsync(item);
                 await EvaluateAndProgressGrnStateAsync(item.GrnId);
             }

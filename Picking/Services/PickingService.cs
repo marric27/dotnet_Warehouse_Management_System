@@ -6,12 +6,13 @@ using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.Outbound.Dtos;
 using dotnet_Warehouse_Management_System.Outbound.Entities;
 using dotnet_Warehouse_Management_System.Outbound.Entities.Services;
+using dotnet_Warehouse_Management_System.Outbound.States;
 using dotnet_Warehouse_Management_System.Picking.Dtos;
 using dotnet_Warehouse_Management_System.Picking.Entities.Service;
 
 namespace dotnet_Warehouse_Management_System.Picking.Services
 {
-    public class PickingService(ApplicationDBContext context, IPicklistService picklistService, IPicklistItemService picklistItemService, IPickingInfoService pickingInfoService, IStockUnitService stockUnitService)
+    public class PickingService(ApplicationDBContext context, IPicklistService picklistService, IPicklistItemService picklistItemService, IPickingInfoService pickingInfoService, IStockUnitService stockUnitService, IPicklistStateWorkflowService picklistStateWorkflowService)
     {
         public async Task<PicklistItemDto?> GetNextPickListItem(NextItemRequest nextItemRequest) => await picklistService.GetNextPickListItemAsync(nextItemRequest);
 
@@ -142,13 +143,11 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
         {
             int pickedQty = picklistItem.PickedQty + totalPickedQty;
             picklistItem.PickedQty = pickedQty;
-            if (pickedQty == picklistItem.Qty)
-            {
-                picklistItem.State = PicklistItemState.PICKED;
-                await UpdatePicklist(picklistCode);
-            }
+            picklistItem.State = picklistStateWorkflowService.EvaluatePicklistItemState(picklistItem, pickedQty);
             picklistItem.ErrorReason = errorReason;
             await picklistItemService.UpdateAsync(picklistItem.Code, picklistItem);
+
+            await UpdatePicklist(picklistCode);
         }
 
         private async Task UpdatePicklist(string picklistCode)
@@ -156,14 +155,13 @@ namespace dotnet_Warehouse_Management_System.Picking.Services
             var picklistDto = await picklistService.GetByCodeAsync(picklistCode)
                 ?? throw new KeyNotFoundException($"Picklist {picklistCode} not found");
 
-            foreach (var item in picklistDto.pickListItemList)
+            PicklistState nextState = picklistStateWorkflowService.EvaluatePicklistState(picklistDto);
+            if (nextState == picklistDto.State)
             {
-                if (item.State == PicklistItemState.OPEN)
-                {
-                    return;
-                }
+                return;
             }
-            picklistDto.State = PicklistState.CLOSED;
+
+            picklistDto.State = nextState;
             await picklistService.UpdateAsync(picklistDto);
         }
 
