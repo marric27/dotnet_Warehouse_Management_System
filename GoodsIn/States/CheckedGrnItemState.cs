@@ -11,7 +11,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.States
         {
             return targetState == Common.State.PUTAWAY
                 && item.CheckingInfoList is not null
-                && item.CheckingInfoList.Any()
+                && item.CheckingInfoList.Count != 0
                 && item.CheckingInfoList.All(c => c.State == Common.State.PUTAWAY);
         }
 
