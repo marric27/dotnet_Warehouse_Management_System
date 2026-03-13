@@ -28,7 +28,11 @@ namespace dotnet_Warehouse_Management_System.GoodsIn
                 item.State = nextState;
                 await grnItemService.UpdateAsync(item);
             }
-            await EvaluateAndProgressGrnStateAsync(item.GrnId);
+
+            if (item.State == State.PUTAWAY)
+            {
+                await EvaluateAndProgressGrnStateAsync(item.GrnId);
+            }
         }
 
         public async Task EvaluateAndProgressGrnStateAsync(long grnId)
