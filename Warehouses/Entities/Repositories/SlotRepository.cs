@@ -2,7 +2,6 @@
 using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
-using dotnet_Warehouse_Management_System.Outbound.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories

@@ -16,10 +16,10 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
     {
         public async Task<List<PicklistDto>> GeneratePicklists(List<long> orderIds)
         {
-            // 1️⃣ Lettura fuori transazione
+            // 1️ Lettura fuori transazione
             List<OrderResponseDto> ordersOpen = await orderService.GetByStateAndIdsAsync(OrderState.OPEN, orderIds);
 
-            if (!ordersOpen.Any())
+            if (ordersOpen.Count == 0)
                 return [];
 
             Dictionary<string, PicklistBuilder> pickListMap = [];
@@ -34,7 +34,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 
             var slotsByProductCode = await slotService.GetBestSlotsForProducts(productCodes);
 
-            // 2️⃣ Costruzione picklist (CPU-bound, no DB)
+            // 2️ Costruzione picklist (CPU-bound, no DB)
             foreach (var order in ordersOpen)
             {
                 if (!pickListMap.TryGetValue(order.customerCode, out var builder))
@@ -63,8 +63,7 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
                 }
             }
 
-
-            // 4️⃣ Build dei PicklistDto
+            // 3 build dei PicklistDto
             var picklists = pickListMap
                 .Values
                 .Select(b => b.Build())
@@ -76,14 +75,12 @@ namespace dotnet_Warehouse_Management_System.Outbound.Release.Services
 
             try
             {
-                // 3️⃣ BULK UPDATE
+                // 4 BULK UPDATE
                 await context.Orders
                     .Where(o => idsToUpdate.Contains(o.Id))
-                    .ExecuteUpdateAsync(s =>
-                        s.SetProperty(o => o.State, OrderState.PICKING));
+                    .ExecuteUpdateAsync(s => s.SetProperty(o => o.State, OrderState.PICKING));
 
-
-                // 5️⃣ Insert batch
+                // 5️ Insert batch
                 var result = await picklistService.CreateBulkAsync(picklists);
 
                 await transaction.CommitAsync();
