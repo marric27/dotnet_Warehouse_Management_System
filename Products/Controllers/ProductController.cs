@@ -3,16 +3,17 @@ using dotnet_Warehouse_Management_System.Products.Entities.Dtos;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace dotnet_Warehouse_Management_System.Products.Controller
+namespace dotnet_Warehouse_Management_System.Products.Controllers
 {
     [ApiController]
     [Route("api/v1/products")]
-    public class ProductController(IProductService productService) : ControllerBase
+    public class ProductController(IProductService productService, ILogger<ProductController> logger) : ControllerBase
     {
 
         [HttpGet]
         public async Task<IActionResult> GetAllPaginated([FromQuery] QueryObject query)
         {
+            logger.LogInformation("Getting all products controller");
             var products = await productService.GetAllPaginatedAsync(query);
             return Ok(products);
         }

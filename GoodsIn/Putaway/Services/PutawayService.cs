@@ -2,6 +2,7 @@
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Events;
+using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services
