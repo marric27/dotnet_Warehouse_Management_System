@@ -3,13 +3,14 @@ using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Common.Helpers;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
+using dotnet_Warehouse_Management_System.GoodsIn.Events;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
 {
-    public class ReceivingService(ApplicationDBContext context, IGrnService grnService, IGrnItemService grnItemService, IProductService productService, IGrnItemStateService grnItemStateService)
+    public class ReceivingService(ApplicationDBContext context, IGrnService grnService, IGrnItemService grnItemService, IProductService productService, IGrnItemStateService grnItemStateService, IEventPublisher eventPublisher)
     {
         public Task<GrnResponseDto> CreateGrn(GrnRequestDto grnRequestDto)
         {
@@ -35,7 +36,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Receiving
                 grnItemRequestDto.GrnId = grn.Id;
                 var created = await grnItemService.CreateAsync(grnItemRequestDto);
 
-                await grnItemStateService.EvaluateAndProgressGrnItemStateAsync(created);
+                await eventPublisher.PublishAsync(new GrnItemCreatedEvent(created.Id, created.Code, created.GrnId));
                 await transaction.CommitAsync();
                 return created;
             }
