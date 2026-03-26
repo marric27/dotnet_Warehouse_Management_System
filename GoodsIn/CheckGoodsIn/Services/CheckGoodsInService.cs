@@ -3,12 +3,13 @@ using dotnet_Warehouse_Management_System.Common.Exceptions;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Dtos;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Events;
 using dotnet_Warehouse_Management_System.GoodsIn.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 
 namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
 {
-    public class CheckGoodsInService(ApplicationDBContext context, IGrnService grnService, IGrnItemService grnItemService, ICheckingInfoService checkingInfoService, IGrnItemStateService stateService, IProductService productService, IStockUnitService stockUnitService)
+    public class CheckGoodsInService(ApplicationDBContext context, IGrnService grnService, IGrnItemService grnItemService, ICheckingInfoService checkingInfoService, IEventPublisher eventPublisher, IProductService productService, IStockUnitService stockUnitService)
     {
         public async Task<GrnItemResponseDto> CreateCheckingInfoAndStockUnit(string grnItemCode, StockUnitRequestDto su)
         {
@@ -45,14 +46,15 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services
                     BatchNumber = su.BatchNumber,
                     ExpirationDate = su.ExpirationDate
                 };
-                await checkingInfoService.CreateAsync(ci);
+                var createdCheckingInfo = await checkingInfoService.CreateAsync(ci);
 
                 // 5. RE-FETCH FINALE (Cruciale per EF)
                 // Recuperiamo l'item dal DB *dopo* l'inserimento della CheckingInfo.
                 // Assicurati che GetByCodeAsync usi .AsNoTracking() per evitare conflitti di tracking.
-                var updatedItem = await grnItemService.GetByCodeAsync(grnItemCode);
+                var updatedItem = await grnItemService.GetByCodeAsync(grnItemCode)
+                    ?? throw new KeyNotFoundException($"GrnItem {grnItemCode} not found");
 
-                await stateService.EvaluateAndProgressGrnItemStateAsync(updatedItem);
+                await eventPublisher.PublishAsync(new CheckingInfoCreatedEvent(updatedItem.Id, updatedItem.Code, createdCheckingInfo.Id));
                 await transaction.CommitAsync();
                 return updatedItem;
             }

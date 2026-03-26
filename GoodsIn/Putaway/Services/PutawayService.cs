@@ -1,7 +1,7 @@
 ﻿using dotnet_Warehouse_Management_System.Common;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
-using dotnet_Warehouse_Management_System.GoodsIn.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Events;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Dtos;
 
@@ -12,8 +12,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services
         ISlotService slotService,
         IStockUnitService stockUnitService,
         ICheckingInfoService checkingInfoService,
-        IGrnItemService grnItemService,
-        IGrnItemStateService stateService)
+        IEventPublisher eventPublisher)
     {
         public async Task<SlotResponseDto> AssignStockUnitToSlotAsync(string stockUnitCode, string slotCode)
         {
@@ -35,9 +34,7 @@ namespace dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services
                 ci.State = State.PUTAWAY;
                 await checkingInfoService.UpdateAsync(ci);
 
-                // Recupero Item e valutazione stato
-                var item = await grnItemService.GetByIdAsync(ci.GrnItemId);
-                await stateService.EvaluateAndProgressGrnItemStateAsync(item);
+                await eventPublisher.PublishAsync(new StockUnitPutawayAssignedEvent(ci.GrnItemId, su.Id, slot.Id));
                 await transaction.CommitAsync();
                 // Ritorna il dato fresco
                 return await slotService.GetByCodeAsync(slotCode);

@@ -4,6 +4,7 @@ using dotnet_Warehouse_Management_System.Customers.Entities.Services;
 using dotnet_Warehouse_Management_System.Data;
 using dotnet_Warehouse_Management_System.GoodsIn;
 using dotnet_Warehouse_Management_System.GoodsIn.CheckGoodsIn.Services;
+using dotnet_Warehouse_Management_System.GoodsIn.Events;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Repositories;
 using dotnet_Warehouse_Management_System.GoodsIn.Entities.Services;
 using dotnet_Warehouse_Management_System.GoodsIn.Putaway.Services;
@@ -21,7 +22,6 @@ using dotnet_Warehouse_Management_System.Picking.Services;
 using dotnet_Warehouse_Management_System.Products.Entities.Repository;
 using dotnet_Warehouse_Management_System.Products.Entities.Services;
 using dotnet_Warehouse_Management_System.Warehouses.Entities.Repositories;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Metrics;
@@ -29,12 +29,15 @@ using OpenTelemetry.Trace;
 using Serilog;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Serilog.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, config) =>
 {
-    config.ReadFrom.Configuration(context.Configuration);
+    config.ReadFrom.Configuration(context.Configuration)
+    .Enrich.FromLogContext()
+    .Enrich.WithExceptionDetails();
 });
 
 
@@ -111,6 +114,7 @@ builder.Services.AddScoped<IGrnRepository, GrnRepository>();
 builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
 builder.Services.AddScoped<IGrnService, GrnService>();
 builder.Services.AddScoped<IGrnItemService, GrnItemService>();
+builder.Services.AddScoped<IEventPublisher, GoodsInEventPublisher>();
 builder.Services.AddScoped<ReceivingService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -149,7 +153,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 
-var app = builder.Build();
+var app = builder.Build(); Log.Information("L'applicazione si sta avviando..."); // Log statico di Serilog
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
