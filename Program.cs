@@ -113,9 +113,7 @@ builder.Services.AddScoped<ISlotRepository, SlotRepository>();
 builder.Services.AddScoped<IGrnRepository, GrnRepository>();
 builder.Services.AddScoped<IGrnItemRepository, GrnItemRepository>();
 builder.Services.AddScoped<IGrnService, GrnService>();
-builder.Services.AddScoped<IGrnItemService, GrnItemService>();
-builder.Services.AddScoped<IEventPublisher, GoodsInEventPublisher>();
-builder.Services.AddScoped<ReceivingService>();
+builder.Services.AddScoped<IGrnItemService, GrnItemService>();builder.Services.AddScoped<ReceivingService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IGrnItemStateService, GrnItemStateService>();
@@ -148,6 +146,11 @@ builder.Services.AddScoped<ICheckingInfoRepository, CheckingInfoRepository>();
 builder.Services.AddScoped<ICheckingInfoService, CheckingInfoService>();
 builder.Services.AddScoped<CheckGoodsInService>();
 builder.Services.AddScoped<PutawayService>();
+builder.Services.AddScoped<IEventPublisher, GoodsInEventDispatcher>();
+
+builder.Services.AddScoped<IEventHandler<GrnItemCreatedEvent>, GrnItemCreatedHandler>();
+builder.Services.AddScoped<IEventHandler<CheckingInfoCreatedEvent>, CheckingInfoCreatedHandler>();
+builder.Services.AddScoped<IEventHandler<StockUnitPutawayAssignedEvent>, StockUnitPutawayAssignedHandler>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
